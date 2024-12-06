@@ -12,7 +12,7 @@
 4. `python -V`
 5. `pip -V`
 6. `pip install -r requirements.txt -i https://mirrors.ustc.edu.cn/pypi/simple`
-7. `python NmapGUI.py`
+7. `python MainWindow.py`
 
 ## 其他工具使用
 
