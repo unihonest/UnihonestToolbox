@@ -8,14 +8,31 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QScrollArea, QVBoxLayout,
     QFrame, QGridLayout, QPushButton, QLabel, QLineEdit, QTextEdit
 )
-from PyQt6.QtGui import QFont, QFontDatabase
+from PyQt6.QtGui import QFont
 import sys
 import subprocess
 import threading
+import platform
 from PyQt6.QtCore import QTimer
 from NmapScanner import NmapScan
 from DNSType import save_dns_records_to_log
 from WhoisInfo import whois_txt
+
+
+def get_system_font():
+    system = platform.system().lower()
+    
+    if 'linux' in system:
+        font_family = "Hack"   # kali linux
+    elif 'windows' in system:
+        font_family = "Consolas"
+    elif 'darwin' in system:  # macOS
+        font_family = "Menlo"
+    else:
+        # 默认字体，如果无法识别操作系统或者是在一个不常见的操作系统上运行
+        font_family = "monospace"
+    
+    return font_family
 
 
 class MainWindow(QMainWindow):
@@ -26,9 +43,9 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("工具箱 - unihonest")        # 设置窗口标题
         self.statusBar().showMessage('Status')           # 设置底部状态栏
-        # 查找系统上可用的等宽字体
-        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
-        font = QFont(fixed_font.family(), 10)
+        # 设置字体
+        font_family = get_system_font()
+        font = QFont(font_family, 10)
 
         scroll_area = QScrollArea()                     # 创建可滚动区域
         self.setCentralWidget(scroll_area)              # 设置为中心部件
@@ -67,21 +84,21 @@ class MainWindow(QMainWindow):
 
         # Nmap scan 控件
         add_label("Nmap (Full port scanning is very slow.)", 0, 0)
-        self.nmapip_input = add_input("Enter your target IP or Domain.", 1, 0)
+        self.nmapip_input = add_input("localhost", 1, 0)
         self.nmaparg_input = add_input("-Pn -sS -sV -O -T3 -p22,80,443,3389", 1, 1)
         scan_button = add_button("Scan", 1, 2)
         scan_button.clicked.connect(self.run_nmap_scan)
         
         # DNS Type 控件
         add_label("DNS Type (A,AAAA,CNAME,MX...)", 2, 0)
-        self.TypeDomain = add_input("Enter your target Domain.", 3, 0)
+        self.TypeDomain = add_input("unihonest.github.io", 3, 0)
         self.TypeDNS = add_input("8.8.8.8", 3, 1)
         scan_button = add_button("RUN", 3, 2)
         scan_button.clicked.connect(self.search_dns_type)
 
         # Whois 控件
         add_label("Whois (Maybe you need to chang the whois server.)", 4, 0)
-        self.WhoisDomain = add_input("Enter your target Domain.", 5, 0)
+        self.WhoisDomain = add_input("unihonest.github.io", 5, 0)
         self.WhoisDNS = add_input("whois.iana.org", 5, 1)
         scan_button = add_button("Whois", 5, 2)
         scan_button.clicked.connect(self.search_whois_info)
