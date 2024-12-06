@@ -141,7 +141,10 @@ class MainWindow(QMainWindow):
         self.output_timer.start(100)                        # Refresh output buffer every 100 ms      
 
         # 结果输出区域
-        self.result_area = add_textarea("Output result.", 9, 0, 1, 3)
+        default_txt = "Output result."
+        self.result_area = add_textarea(default_txt, 9, 0, 1, 3)
+        self.result_area.append("\nOther tool you can run here.")
+        self.result_area.append("\npython ..\\OneForAll\\oneforall.py -h")
     
     def on_combobox_changed(self, url_string):
         if url_string == '信息收集':

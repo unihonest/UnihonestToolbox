@@ -13,3 +13,8 @@
 5. `pip -V`
 6. `pip install -r requirements.txt -i https://mirrors.ustc.edu.cn/pypi/simple`
 7. `python NmapGUI.py`
+
+## 其他工具使用
+
+1. `pip install -r .\其他工具目录\requirements.txt -i https://mirrors.ustc.edu.cn/pypi/simple`
+2. 在 Command 功能处，运行命令，如：`python ..`
