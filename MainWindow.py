@@ -5,25 +5,31 @@ __author__ = "unihonest"
 __license__ = "GNU General Public License v3.0"
 
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QScrollArea, QVBoxLayout,
-    QFrame, QGridLayout, QPushButton, QLabel, QLineEdit, QTextEdit
+    QApplication, QMainWindow, QScrollArea, QVBoxLayout, QComboBox,
+    QFrame, QGridLayout, QPushButton, QLabel, QLineEdit, QTextEdit,
+    QMessageBox
 )
-from PyQt6.QtGui import QFont
+from PyQt6.QtCore import QTimer
+from PyQt6.QtGui import QFont, QDesktopServices
+from PyQt6.QtCore import QUrl
 import sys
 import subprocess
 import threading
 import platform
-from PyQt6.QtCore import QTimer
 from NmapScanner import NmapScan
 from DNSType import save_dns_records_to_log
 from WhoisInfo import whois_txt
+from DarkCSS import darkcss
 
+# 定义 Darcula 风格的 QSS
+
+dark_style = darkcss()
 
 def get_system_font():
     system = platform.system().lower()
     
     if 'linux' in system:
-        font_family = QFont("Hack", 8)    # kali linux
+        font_family = QFont("Hack", 6)    # kali linux字体 + 2k hidpi mod
     elif 'windows' in system:
         font_family = QFont("Consolas", 10)
     elif 'darwin' in system:  # macOS
@@ -59,10 +65,11 @@ class MainWindow(QMainWindow):
         grid_layout = QGridLayout()                     # 创建网格布局并添加到主布局中
         main_layout.addLayout(grid_layout)
 
-         # 定义通用组件添加函数
-        def add_label(text, row, col, row_span=1, col_span=1):
+        # 定义通用组件添加函数
+        def add_label(text, row, col, row_span=1, col_span=3):
             label = QLabel(text)
             grid_layout.addWidget(label, row, col, row_span, col_span)
+            # 设置标签的样式表，应用线性渐变
 
         def add_input(placeholder, row, col, row_span=1, col_span=1):
             input_field = QLineEdit(placeholder)
@@ -81,33 +88,48 @@ class MainWindow(QMainWindow):
             grid_layout.addWidget(button, row, col, row_span, col_span)
             return button
 
+        # 创建一个 QComboBox 控件
+        self.combo = QComboBox(self)
+        self.combo.addItem('信息收集') 
+        self.combo.addItem('https://www.ip138.com/')
+        self.combo.addItem('https://ip.tool.chinaz.com/')
+        self.combo.addItem('https://beian.miit.gov.cn/') # 备案
+        self.combo.addItem('https://fofa.info/')
+        self.combo.addItem('https://hunter.qianxin.com/')
+        self.combo.addItem('https://www.zoomeye.org/')
+        self.combo.addItem('https://www.google.com/')
+        self.combo.addItem('https://www.shodan.io/')
+        self.combo.addItem('https://github.com/')
+        self.combo.currentTextChanged.connect(self.on_combobox_changed) # 当选择改变时连接到槽函数
+        grid_layout.addWidget(self.combo, 0, 0)
+
         # Nmap scan 控件
-        add_label("Nmap (Full port scanning is very slow.)", 0, 0)
-        self.nmapip_input = add_input("localhost", 1, 0)
-        self.nmaparg_input = add_input("-Pn -sS -sV -O -T3 -p22,80,443,3389", 1, 1)
-        scan_button = add_button("Scan", 1, 2)
+        add_label("Nmap", 1, 0)
+        self.nmapip_input = add_input("localhost", 2, 0)
+        self.nmaparg_input = add_input("-Pn -sS -sV -O -T3 -p22,80,443,3389", 2, 1)
+        scan_button = add_button("Scan", 2, 2)
         scan_button.clicked.connect(self.run_nmap_scan)
         
         # DNS Type 控件
-        add_label("DNS Type (A,AAAA,CNAME,MX...)", 2, 0)
-        self.TypeDomain = add_input("unihonest.github.io", 3, 0)
-        self.TypeDNS = add_input("8.8.8.8", 3, 1)
-        scan_button = add_button("RUN", 3, 2)
+        add_label("DNS Type (A,AAAA,CNAME,MX...)", 3, 0)
+        self.TypeDomain = add_input("unihonest.github.io", 4, 0)
+        self.TypeDNS = add_input("8.8.8.8", 4, 1)
+        scan_button = add_button("RUN", 4, 2)
         scan_button.clicked.connect(self.search_dns_type)
 
         # Whois 控件
-        add_label("Whois (Maybe you need to chang the whois server.)", 4, 0)
-        self.WhoisDomain = add_input("unihonest.github.io", 5, 0)
-        self.WhoisDNS = add_input("whois.iana.org", 5, 1)
-        scan_button = add_button("Whois", 5, 2)
+        add_label("Whois (Maybe you need to chang the whois server.)", 5, 0)
+        self.WhoisDomain = add_input("unihonest.github.io", 6, 0)
+        self.WhoisDNS = add_input("whois.iana.org", 6, 1)
+        scan_button = add_button("Whois", 6, 2)
         scan_button.clicked.connect(self.search_whois_info)
 
         # Command 控件
-        add_label("Command", 6, 0)
-        self.command_input = add_input("Enter command", 7, 0)     
-        self.execute_button = add_button("Exec", 7, 1)
+        add_label("Command", 7, 0)
+        self.command_input = add_input("Enter command", 8, 0)     
+        self.execute_button = add_button("Exec", 8, 1)
         self.execute_button.clicked.connect(self.execute_command)
-        self.cancel_button = add_button("Cancel", 7, 2)
+        self.cancel_button = add_button("Cancel", 8, 2)
         self.cancel_button.clicked.connect(self.cancel_command)
         self.cancel_button.setEnabled(False)                # 初始状态禁用
 
@@ -119,8 +141,17 @@ class MainWindow(QMainWindow):
         self.output_timer.start(100)                        # Refresh output buffer every 100 ms      
 
         # 结果输出区域
-        self.result_area = add_textarea("Output result.", 8, 0, 1, 4)
-        
+        self.result_area = add_textarea("Output result.", 9, 0, 1, 3)
+    
+    def on_combobox_changed(self, url_string):
+        if url_string == '信息收集':
+            self.statusBar().showMessage('请选择一个链接打开。')
+            return
+
+        # 尝试打开选中的URL
+        url = QUrl(url_string)
+        if not QDesktopServices.openUrl(url):
+            QMessageBox.warning(self, 'Open URL', f'Could not open URL: {url_string}')
 
     def run_nmap_scan(self):
         ip = self.nmapip_input.text().strip()
@@ -220,7 +251,8 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyleSheet(dark_style)
     window = MainWindow()
-    window.resize(800, 400)
+    window.resize(800, 600)
     window.show()
     sys.exit(app.exec())
