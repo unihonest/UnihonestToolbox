@@ -23,14 +23,14 @@ def get_system_font():
     system = platform.system().lower()
     
     if 'linux' in system:
-        font_family = "Hack"   # kali linux
+        font_family = QFont("Hack", 8)    # kali linux
     elif 'windows' in system:
-        font_family = "Consolas"
+        font_family = QFont("Consolas", 10)
     elif 'darwin' in system:  # macOS
-        font_family = "Menlo"
+        font_family = QFont("Menlo", 10)
     else:
         # 默认字体，如果无法识别操作系统或者是在一个不常见的操作系统上运行
-        font_family = "monospace"
+        font_family = QFont("monospace", 10)
     
     return font_family
 
@@ -44,8 +44,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("工具箱 - unihonest")        # 设置窗口标题
         self.statusBar().showMessage('Status')           # 设置底部状态栏
         # 设置字体
-        font_family = get_system_font()
-        font = QFont(font_family, 10)
+        font = get_system_font()
 
         scroll_area = QScrollArea()                     # 创建可滚动区域
         self.setCentralWidget(scroll_area)              # 设置为中心部件
