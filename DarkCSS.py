@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = "unihonest"
+__license__ = "GNU General Public License v3.0"
+
 def darkcss():
     dark_style = """
         QMainWindow {

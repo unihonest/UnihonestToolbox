@@ -21,6 +21,7 @@ from NmapScanner import NmapScan
 from DNSType import save_dns_records_to_log
 from WhoisInfo import whois_txt
 from DarkCSS import darkcss
+from MenubarLink import get_manu_link
 
 # 黑暗风格
 dark_style = darkcss()
@@ -65,17 +66,17 @@ class MainWindow(QMainWindow):
         grid_layout = QGridLayout()                     # 创建网格布局
         main_layout.addLayout(grid_layout)              # 添加到主布局中
 
-        # 创建通用组件添加函数，QLabel，QLineEdit，QTextEdit，QPushButton
-        def add_label(text, row, col, row_span=1, col_span=3):
+        # 创建通用组件添加函数，QLabel，QLineEdit，QTextEdit，QPushButton, QMenu
+        def add_label(text, row, col, row_span=1, col_span=5):
             label = QLabel(text)
             grid_layout.addWidget(label, row, col, row_span, col_span)
 
-        def add_input(placeholder, row, col, row_span=1, col_span=1):
+        def add_input(placeholder, row, col, row_span=1, col_span=2):
             input_field = QLineEdit(placeholder)
             grid_layout.addWidget(input_field, row, col, row_span, col_span)
             return input_field
 
-        def add_textarea(placeholder, row, col, row_span=1, col_span=1):
+        def add_textarea(placeholder, row, col, row_span=1, col_span=2):
             textarea = QTextEdit(placeholder)
             grid_layout.addWidget(textarea, row, col, row_span, col_span)
             textarea.setReadOnly(True)
@@ -87,174 +88,106 @@ class MainWindow(QMainWindow):
             grid_layout.addWidget(button, row, col, row_span, col_span)
             return button
 
+        def add_menu_with_actions(parent_menu, menu_title, actions):
+            """Helper function to create a menu with its actions."""
+            menu = QMenu(menu_title, self)
+            for action_name, url in actions:
+                action = QAction(action_name, self)
+                action.triggered.connect(lambda checked, u=url: webbrowser.open(u))
+                menu.addAction(action)
+            parent_menu.addMenu(menu)
+            return menu
+
         # 创建菜单栏
-        menubar = self.menuBar()                                                        
-        grid_layout.addWidget(menubar, 0, 2)                                            # 设置菜单栏位置
-        menubar.setFixedWidth(88)                                                       # 固定菜单栏列宽
-        menubar1 = menubar.addMenu('信息收集')                                           # 设置菜单栏名称
-        menubar11 = QMenu('资产测绘', self)                                              # 设置菜单项
-        action111 = QAction('fofa', self)                                               # 设置菜单子项
-        action111.triggered.connect(lambda: webbrowser.open('https://fofa.info/'))      # 设置菜单子项动作
-        menubar11.addAction(action111)                                                  # 菜单子项绑定菜单项
-        action112 = QAction('微步在线', self)                                               # 设置菜单子项
-        action112.triggered.connect(lambda: webbrowser.open('https://x.threatbook.com/v5/mapping'))      # 设置菜单子项动作
-        menubar11.addAction(action112)                                                  # 菜单子项绑定菜单项
-        action113 = QAction('奇安信鹰图', self)                                               # 设置菜单子项
-        action113.triggered.connect(lambda: webbrowser.open('https://hunter.qianxin.com/'))      # 设置菜单子项动作
-        menubar11.addAction(action113)                                                  # 菜单子项绑定菜单项
-        action114 = QAction('360quake', self)                                               # 设置菜单子项
-        action114.triggered.connect(lambda: webbrowser.open('https://quake.360.net/'))      # 设置菜单子项动作
-        menubar11.addAction(action114)                                                  # 菜单子项绑定菜单项
-        action115 = QAction('zoomeye', self)                                               # 设置菜单子项
-        action115.triggered.connect(lambda: webbrowser.open('https://www.zoomeye.org/'))      # 设置菜单子项动作
-        menubar11.addAction(action115)                                                  # 菜单子项绑定菜单项
+        menubar = self.menuBar()
+        grid_layout.addWidget(menubar, 0, 4)  # 设置菜单栏位置
+        menubar.setFixedWidth(88)  # 固定菜单栏列宽
 
-        menubar12 = QMenu('搜索引擎', self)                                              # 设置菜单项
-        action121 = QAction('google', self)                                               # 设置菜单子项
-        action121.triggered.connect(lambda: webbrowser.open('https://www.google.com/'))      # 设置菜单子项动作
-        menubar12.addAction(action121)                                                  # 菜单子项绑定菜单项
-        action122 = QAction('shodan', self)                                               # 设置菜单子项
-        action122.triggered.connect(lambda: webbrowser.open('https://www.shodan.io/'))      # 设置菜单子项动作
-        menubar12.addAction(action122)                                                  # 菜单子项绑定菜单项
-        action123 = QAction('github', self)                                               # 设置菜单子项
-        action123.triggered.connect(lambda: webbrowser.open('https://github.com/'))      # 设置菜单子项动作
-        menubar12.addAction(action123)                                                  # 菜单子项绑定菜单项
-        action124 = QAction('baidu', self)                                               # 设置菜单子项
-        action124.triggered.connect(lambda: webbrowser.open('https://www.baidu.com/'))      # 设置菜单子项动作
-        menubar12.addAction(action124)                                                  # 菜单子项绑定菜单项
+        # 从MenubarLink.py获取链接
+        menus_and_actions_xxsj = get_manu_link()
 
-        menubar13 = QMenu('站长工具', self)                                              # 设置菜单项
-        action131 = QAction('chinaz', self)                                               # 设置菜单子项
-        action131.triggered.connect(lambda: webbrowser.open('https://ip.tool.chinaz.com/'))      # 设置菜单子项动作
-        menubar13.addAction(action131)                                                  # 菜单子项绑定菜单项
-        action132 = QAction('ip138', self)                                               # 设置菜单子项
-        action132.triggered.connect(lambda: webbrowser.open('https://www.ip138.com/'))      # 设置菜单子项动作
-        menubar13.addAction(action132)                                                  # 菜单子项绑定菜单项
-        action133 = QAction('beian', self)                                               # 设置菜单子项
-        action133.triggered.connect(lambda: webbrowser.open('https://beian.miit.gov.cn/'))      # 设置菜单子项动作
-        menubar13.addAction(action133)       
+        # 添加主菜单
+        main_menu = menubar.addMenu('安全链接')
 
-        menubar14 = QMenu('漏洞查询', self)                                              # 设置菜单项
-        action141 = QAction('cnvd', self)                                               # 设置菜单子项
-        action141.triggered.connect(lambda: webbrowser.open('https://www.cnvd.org.cn/flaw/list'))      # 设置菜单子项动作
-        menubar14.addAction(action141)                                                  # 菜单子项绑定菜单项
-        action142 = QAction('seebug', self)                                               # 设置菜单子项
-        action142.triggered.connect(lambda: webbrowser.open('https://www.seebug.org/?s1=search#'))      # 设置菜单子项动作
-        menubar14.addAction(action142)                                                  # 菜单子项绑定菜单项
-        action143 = QAction('aliyun', self)                                               # 设置菜单子项
-        action143.triggered.connect(lambda: webbrowser.open('https://avd.aliyun.com/'))      # 设置菜单子项动作
-        menubar14.addAction(action143)                                                  # 菜单子项绑定菜单项
-        action144 = QAction('chaitin', self)                                               # 设置菜单子项
-        action144.triggered.connect(lambda: webbrowser.open('https://stack.chaitin.com/vuldb/index'))      # 设置菜单子项动作
-        menubar14.addAction(action144)                                                  # 菜单子项绑定菜单项
-        action145 = QAction('threatbook', self)                                               # 设置菜单子项
-        action145.triggered.connect(lambda: webbrowser.open('https://x.threatbook.com/v5/vulIntelligence'))      # 设置菜单子项动作
-        menubar14.addAction(action145)                                                  # 菜单子项绑定菜单项
-
-        menubar15 = QMenu('企业信息', self)                                              # 设置菜单项
-        action151 = QAction('天眼查', self)                                               # 设置菜单子项
-        action151.triggered.connect(lambda: webbrowser.open('https://www.tianyancha.com/'))      # 设置菜单子项动作
-        menubar15.addAction(action151)                                                  # 菜单子项绑定菜单项
-        action152 = QAction('企查查', self)                                               # 设置菜单子项
-        action152.triggered.connect(lambda: webbrowser.open('https://www.qcc.com/'))      # 设置菜单子项动作
-        menubar15.addAction(action152)                                                  # 菜单子项绑定菜单项
-        action153 = QAction('爱企查', self)                                               # 设置菜单子项
-        action153.triggered.connect(lambda: webbrowser.open('https://aiqicha.baidu.com/'))      # 设置菜单子项动作
-        menubar15.addAction(action153)                                                  # 菜单子项绑定菜单项
-        action154 = QAction('零零信安', self)                                               # 设置菜单子项
-        action154.triggered.connect(lambda: webbrowser.open('https://0.zone/'))      # 设置菜单子项动作
-        menubar15.addAction(action154)                                                  # 菜单子项绑定菜单项
-        
-        menubar16 = QMenu('安全新闻', self)                                              # 设置菜单项
-        action161 = QAction('freebuf', self)                                               # 设置菜单子项
-        action161.triggered.connect(lambda: webbrowser.open('https://www.freebuf.com/'))      # 设置菜单子项动作
-        menubar16.addAction(action161)                                                  # 菜单子项绑定菜单项
-        action162 = QAction('安全内参', self)                                               # 设置菜单子项
-        action162.triggered.connect(lambda: webbrowser.open('https://www.secrss.com/'))      # 设置菜单子项动作
-        menubar16.addAction(action162)                                                  # 菜单子项绑定菜单项
-        action163 = QAction('cnvd', self)                                               # 设置菜单子项
-        action163.triggered.connect(lambda: webbrowser.open('https://www.cnvd.org.cn/'))      # 设置菜单子项动作
-        menubar16.addAction(action163)                                                  # 菜单子项绑定菜单项
-        action164 = QAction('蚁景新闻', self)                                               # 设置菜单子项
-        action164.triggered.connect(lambda: webbrowser.open('https://www.yijinglab.com/news'))      # 设置菜单子项动作
-        menubar16.addAction(action164)                                                  # 菜单子项绑定菜单项
-        action165 = QAction('thehackernews', self)                                               # 设置菜单子项
-        action165.triggered.connect(lambda: webbrowser.open('https://thehackernews.com/'))      # 设置菜单子项动作
-        menubar16.addAction(action165)                                                  # 菜单子项绑定菜单项
-
-        menubar17 = QMenu('安全博客', self)                                              # 设置菜单项
-        action171 = QAction('unihonest', self)                                               # 设置菜单子项
-        action171.triggered.connect(lambda: webbrowser.open('https://www.yuque.com/unihonest/netsecdef'))      # 设置菜单子项动作
-        menubar17.addAction(action171)                                                  # 菜单子项绑定菜单项
-        action172 = QAction('seebug', self)                                               # 设置菜单子项
-        action172.triggered.connect(lambda: webbrowser.open('https://paper.seebug.org/'))      # 设置菜单子项动作
-        menubar17.addAction(action172)                                                  # 菜单子项绑定菜单项
-
-
-        menubar1.addMenu(menubar11)                                                   # 菜单项绑定菜单栏
-        menubar1.addMenu(menubar12)                                                   # 菜单项绑定菜单栏
-        menubar1.addMenu(menubar13)                                                   # 菜单项绑定菜单栏
-        menubar1.addMenu(menubar14)                                                   # 菜单项绑定菜单栏
-        menubar1.addMenu(menubar15)                                                   # 菜单项绑定菜单栏
-        menubar1.addMenu(menubar16)                                                   # 菜单项绑定菜单栏
-        menubar1.addMenu(menubar17)                                                   # 菜单项绑定菜单栏
+        # 添加子菜单和动作
+        for submenu_title, submenu_actions in menus_and_actions_xxsj['安全链接']:
+            add_menu_with_actions(main_menu, submenu_title, submenu_actions)
 
         # 创建一个 QComboBox 控件
         self.combo = QComboBox(self)
-        self.combo.addItem('安全工具') 
-
+        self.combo.addItem('安全新闻')
+        self.combo.addItem('https://www.secrss.com/')
+        self.combo.addItem('https://www.cnvd.org.cn/')
+        self.combo.addItem('https://www.yijinglab.com/news')
+        self.combo.addItem('https://thehackernews.com/')
+        # self.combo.addItem('')
         self.combo.currentTextChanged.connect(self.on_combobox_changed) # 当选择改变时连接到槽函数
         grid_layout.addWidget(self.combo, 0, 0)
+
+        # 创建一个 QComboBox 控件
+        self.combo = QComboBox(self)
+        self.combo.addItem('安全工具')
+        self.combo.addItem('OneForAll')
+        # self.combo.addItem('')
+        self.combo.currentTextChanged.connect(self.on_combobox_settxt) # 当选择改变时连接到槽函数
+        grid_layout.addWidget(self.combo, 0, 1)
 
         # Nmap scan 控件
         add_label("Nmap", 1, 0)
         self.nmapip_input = add_input("localhost", 2, 0)
-        self.nmaparg_input = add_input("-Pn -sS -sV -O -T3 -p22,80,443,3389", 2, 1)
-        scan_button = add_button("Scan", 2, 2)
+        self.nmaparg_input = add_input("-Pn -sS -sV -O -T3 -p22,80,443,3389", 2, 2)
+        scan_button = add_button("Scan", 2, 4)
         scan_button.clicked.connect(self.run_nmap_scan)
         
         # DNS Type 控件
         add_label("DNS Type (A,AAAA,CNAME,MX...)", 3, 0)
         self.TypeDomain = add_input("unihonest.github.io", 4, 0)
-        self.TypeDNS = add_input("8.8.8.8", 4, 1)
-        scan_button = add_button("RUN", 4, 2)
+        self.TypeDNS = add_input("8.8.8.8", 4, 2)
+        scan_button = add_button("RUN", 4, 4)
         scan_button.clicked.connect(self.search_dns_type)
 
         # Whois 控件
         add_label("Whois (也许你需要根据 refer 修改 whois server.)", 5, 0)
         self.WhoisDomain = add_input("unihonest.github.io", 6, 0)
-        self.WhoisDNS = add_input("whois.iana.org", 6, 1)
-        scan_button = add_button("Whois", 6, 2)
+        self.WhoisDNS = add_input("whois.iana.org", 6, 2)
+        scan_button = add_button("Whois", 6, 4)
         scan_button.clicked.connect(self.search_whois_info)
 
         # Command 控件
         add_label("Command", 7, 0)
-        self.command_input = add_input("Enter command", 8, 0)     
-        self.execute_button = add_button("Exec", 8, 1)
+        self.command_input = add_input("Enter command", 8, 0, 1, 3)     
+        self.execute_button = add_button("Exec", 8, 3, 1, 1)
         self.execute_button.clicked.connect(self.execute_command)
-        self.cancel_button = add_button("Cancel", 8, 2)
+        self.cancel_button = add_button("Cancel", 8, 4, 1, 1)
         self.cancel_button.clicked.connect(self.cancel_command)
         self.cancel_button.setEnabled(False)                # 初始状态禁用
 
-        # Command Executor 线程锁，缓存100ms的数据
+        # Command Executor 线程锁，缓冲数据
         self.output_lock = threading.Lock()
         self.output_buffer = []
         self.output_timer = QTimer(self)
         self.output_timer.timeout.connect(self.flush_output_buffer)
-        self.output_timer.start(100)                        # Refresh output buffer every 100 ms      
+        self.output_timer.start(50) # 缓冲时间 ms   
 
         # 结果输出区域
-        default_txt = '''结果输出区域.
-        \n\n你可以在 Command 执行其他工具命令。\n如：python ..\\OneForAll\\oneforall.py -h
-        '''
-        self.result_area = add_textarea(default_txt, 9, 0, 1, 3)
-        self.result_area.setText(default_txt)
-    
-    def on_combobox_changed(self, url_string):
-        if url_string == 'Reconnaissance':
-            self.statusBar().showMessage('请选择一个链接')
-            return
+        default_txt = "结果输出区域.\n你可以在 Command 执行其他工具命令。"
 
+        self.result_area = add_textarea(default_txt, 9, 0, 1, 5)
+        self.result_area.setText(default_txt)
+
+    def on_combobox_settxt(self, url_string):
+        if url_string == 'OneForAll':
+            oneforall_txt = "子域收集工具:https://github.com/shmilylty/OneForAll\n"
+            oneforall_txt1 = "查看帮助: python oneforall.py -h\n"
+            oneforall_txt2 = "禁用字典测试: python oneforall.py --target vulnweb.com --brute False run\n"
+            oneforall_txt3 = "字典测试(线程20): python brute.py --target vulnweb.com --word True --concurrent 20 run"
+            self.result_area.setText(oneforall_txt+oneforall_txt1+oneforall_txt2+oneforall_txt3)
+
+    def on_combobox_changed(self, url_string):
+        if url_string == '安全新闻':
+            self.result_area.setText("请选择安全新闻链接")
+            return
+        
         # 尝试打开选中的URL
         url = QUrl(url_string)
         if not QDesktopServices.openUrl(url):
@@ -271,7 +204,7 @@ class MainWindow(QMainWindow):
             self.result_area.setText(nmap_table)
             self.statusBar().showMessage('Nmap logpath：' + logpath)
         except Exception as e:
-            self.result_area.setText(f"Error during nmap scan: {str(e)}")
+            self.result_area.setText(f"Error detail: {str(e)}")
     
     def search_dns_type(self):
         TypeDomain = self.TypeDomain.text().strip()
