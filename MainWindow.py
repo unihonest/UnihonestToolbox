@@ -179,9 +179,9 @@ class MainWindow(QMainWindow):
         if url_string == 'OneForAll':
             oneforall_txt = "子域收集工具:https://github.com/shmilylty/OneForAll\n"
             oneforall_txt1 = "查看帮助: python oneforall.py -h\n"
-            oneforall_txt2 = "禁用字典测试: python oneforall.py --target vulnweb.com --brute False run\n"
-            oneforall_txt3 = "字典测试(线程20): python brute.py --target vulnweb.com --word True --concurrent 20 run"
-            self.result_area.setText(oneforall_txt+oneforall_txt1+oneforall_txt2+oneforall_txt3)
+            oneforall_txt2 = "禁用字典测试: python oneforall.py --target domain.com --brute False run\n"
+            self.result_area.setText(oneforall_txt+oneforall_txt1+oneforall_txt2)
+            return
 
     def on_combobox_changed(self, url_string):
         if url_string == '安全新闻':
@@ -192,6 +192,7 @@ class MainWindow(QMainWindow):
         url = QUrl(url_string)
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open URL', f'Could not open URL: {url_string}')
+            return
 
     def run_nmap_scan(self):
         ip = self.nmapip_input.text().strip()
