@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         menubar.setFixedWidth(88)                                                       # 固定菜单栏列宽
         menubar1 = menubar.addMenu('信息收集')                                           # 设置菜单栏名称
         menubar11 = QMenu('资产测绘', self)                                              # 设置菜单项
-        action111 = QAction('FOFA', self)                                               # 设置菜单子项
+        action111 = QAction('fofa', self)                                               # 设置菜单子项
         action111.triggered.connect(lambda: webbrowser.open('https://fofa.info/'))      # 设置菜单子项动作
         menubar11.addAction(action111)                                                  # 菜单子项绑定菜单项
         action112 = QAction('微步在线', self)                                               # 设置菜单子项
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         action113 = QAction('奇安信鹰图', self)                                               # 设置菜单子项
         action113.triggered.connect(lambda: webbrowser.open('https://hunter.qianxin.com/'))      # 设置菜单子项动作
         menubar11.addAction(action113)                                                  # 菜单子项绑定菜单项
-        action114 = QAction('Quake', self)                                               # 设置菜单子项
+        action114 = QAction('360quake', self)                                               # 设置菜单子项
         action114.triggered.connect(lambda: webbrowser.open('https://quake.360.net/'))      # 设置菜单子项动作
         menubar11.addAction(action114)                                                  # 菜单子项绑定菜单项
         action115 = QAction('zoomeye', self)                                               # 设置菜单子项
@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         action122 = QAction('shodan', self)                                               # 设置菜单子项
         action122.triggered.connect(lambda: webbrowser.open('https://www.shodan.io/'))      # 设置菜单子项动作
         menubar12.addAction(action122)                                                  # 菜单子项绑定菜单项
-        action123 = QAction('GitHub', self)                                               # 设置菜单子项
+        action123 = QAction('github', self)                                               # 设置菜单子项
         action123.triggered.connect(lambda: webbrowser.open('https://github.com/'))      # 设置菜单子项动作
         menubar12.addAction(action123)                                                  # 菜单子项绑定菜单项
         action124 = QAction('baidu', self)                                               # 设置菜单子项
@@ -172,12 +172,24 @@ class MainWindow(QMainWindow):
         action162 = QAction('安全内参', self)                                               # 设置菜单子项
         action162.triggered.connect(lambda: webbrowser.open('https://www.secrss.com/'))      # 设置菜单子项动作
         menubar16.addAction(action162)                                                  # 菜单子项绑定菜单项
-        action163 = QAction('CNVD', self)                                               # 设置菜单子项
+        action163 = QAction('cnvd', self)                                               # 设置菜单子项
         action163.triggered.connect(lambda: webbrowser.open('https://www.cnvd.org.cn/'))      # 设置菜单子项动作
         menubar16.addAction(action163)                                                  # 菜单子项绑定菜单项
         action164 = QAction('蚁景新闻', self)                                               # 设置菜单子项
         action164.triggered.connect(lambda: webbrowser.open('https://www.yijinglab.com/news'))      # 设置菜单子项动作
         menubar16.addAction(action164)                                                  # 菜单子项绑定菜单项
+        action165 = QAction('thehackernews', self)                                               # 设置菜单子项
+        action165.triggered.connect(lambda: webbrowser.open('https://thehackernews.com/'))      # 设置菜单子项动作
+        menubar16.addAction(action165)                                                  # 菜单子项绑定菜单项
+
+        menubar17 = QMenu('安全博客', self)                                              # 设置菜单项
+        action171 = QAction('unihonest', self)                                               # 设置菜单子项
+        action171.triggered.connect(lambda: webbrowser.open('https://www.yuque.com/unihonest/netsecdef'))      # 设置菜单子项动作
+        menubar17.addAction(action171)                                                  # 菜单子项绑定菜单项
+        action172 = QAction('seebug', self)                                               # 设置菜单子项
+        action172.triggered.connect(lambda: webbrowser.open('https://paper.seebug.org/'))      # 设置菜单子项动作
+        menubar17.addAction(action172)                                                  # 菜单子项绑定菜单项
+
 
         menubar1.addMenu(menubar11)                                                   # 菜单项绑定菜单栏
         menubar1.addMenu(menubar12)                                                   # 菜单项绑定菜单栏
@@ -185,13 +197,12 @@ class MainWindow(QMainWindow):
         menubar1.addMenu(menubar14)                                                   # 菜单项绑定菜单栏
         menubar1.addMenu(menubar15)                                                   # 菜单项绑定菜单栏
         menubar1.addMenu(menubar16)                                                   # 菜单项绑定菜单栏
+        menubar1.addMenu(menubar17)                                                   # 菜单项绑定菜单栏
 
         # 创建一个 QComboBox 控件
         self.combo = QComboBox(self)
         self.combo.addItem('安全工具') 
-        self.combo.addItem('Reconnaissance') 
-        self.combo.addItem('Reconnaissance') 
-        self.combo.addItem('Reconnaissance') 
+
         self.combo.currentTextChanged.connect(self.on_combobox_changed) # 当选择改变时连接到槽函数
         grid_layout.addWidget(self.combo, 0, 0)
 
