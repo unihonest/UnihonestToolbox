@@ -14,13 +14,9 @@
 4. `pip install -r requirements.txt -i https://mirrors.ustc.edu.cn/pypi/simple`
 5. `python MainWindow.py`
 
-nmap 功能需在本地安装 nmap 软件：
-
-* 在 https://nmap.org/download 下载 nmap，在 https://nmap.org/dist/sigs/ 下载 hash 文件，校验 hash 值。
-
 ## 界面
 
-![1733594356968](image/README/1733594356968.png)
+![1733641366008](image/README/1733641366008.png)
 
 ## 其他工具使用
 
