@@ -63,13 +63,31 @@ def get_manu_link():
                 ('安恒', 'https://sandbox.dbappsecurity.com.cn/'),
                 ('哈勃', 'https://habo.qq.com/')
             ]),
-            # ('安全新闻', [
-            #     ('freebuf', 'https://www.freebuf.com/'),
-            #     ('安全内参', 'https://www.secrss.com/'),
-            #     ('cnvd', 'https://www.cnvd.org.cn/'),
-            #     ('蚁景新闻', 'https://www.yijinglab.com/news'),
-            #     ('thehackernews', 'https://thehackernews.com/')
+            # ('杀毒软件', [
+            #     ('(Win)360杀毒', 'https://sd.360.cn/download_center.html'),
+            #     ('(Win)火绒', 'https://www.huorong.cn/'),
+            #     ('(Win)天融信', 'http://edr.topsec.com.cn/'),
+            #     ('(Win)卡巴斯基', 'https://www.kaspersky.com.cn/downloads'),
+            #     ('火绒', ''),
+            #     ('火绒', ''),
+            #     ('火绒', ''),
+            #     ('腾讯管家', '')
             # ]),
+            # ('应急响应', [
+            #     ('(Win)Everything', 'https://www.voidtools.com/zh-cn/downloads/'),
+            #     ('(Win)SysinternalsSuite', 'https://learn.microsoft.com/en-us/sysinternals/downloads/'),
+            #     ('(Win)', ''),
+            #     ('(Win)', ''),
+            #     ('(linux)busybox', 'https://busybox.net/'),
+            #     ('火绒', ''),
+            #     ('火绒', ''),
+            #     ('腾讯管家', '')
+            # ]),
+            ('勒索解密', [
+                ('360', 'https://lesuobingdu.360.cn/'),
+                ('奇安信', 'https://lesuobingdu.qianxin.com/'),
+                ('腾讯管家', 'https://guanjia.qq.com/pr/ls/')
+            ]),
             ('博客社区', [
                 ('个人知识库', 'https://www.yuque.com/unihonest/netsecdef'),
                 ('知道创宇', 'https://paper.seebug.org/'),
@@ -87,6 +105,10 @@ def get_manu_link():
                 ('棱角社区', 'https://forum.ywhack.com/index.php'),
                 ('one-fox', 'https://tool.one-fox.cn/'),
                 ('tidesec', 'http://bypass.tidesec.com/order/')
+            ]),
+            ('开源镜像', [
+                ('清华大学', 'https://mirrors.tuna.tsinghua.edu.cn/'),
+                ('中科大', 'https://mirrors.ustc.edu.cn/')
             ])
         ]
     }

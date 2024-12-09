@@ -25,6 +25,7 @@ from GetMenubarLink import get_manu_link
 from GetToolTXT import get_tool_txt
 from GetNewsLink import get_news_link
 
+# 加载本地更纱黑体，以绝对路径的方式
 def get_loacl_font():
     current_dir = os.path.dirname(os.path.abspath(__file__)) # 确定字体文件路径
     font_path = os.path.join(current_dir, "SarasaFixedSC-TTF-1.0.24", "SarasaFixedSC-Light.ttf")
@@ -130,7 +131,7 @@ class MainWindow(QMainWindow):
         for submenu_title, submenu_actions in menus_and_actions_link['安全链接']:
             add_menu_with_actions(main_menu, submenu_title, submenu_actions)
 
-        # 创建安全新闻的 QComboBox 控件
+        # “安全新闻”的下拉列表
         self.combo1 = QComboBox(self)
         self.news_link = get_news_link()
         for news in self.news_link:
@@ -139,32 +140,31 @@ class MainWindow(QMainWindow):
         self.combo1.currentTextChanged.connect(self.on_combobox_changed) # 当选择改变时连接到槽函数
         grid_layout.addWidget(self.combo1, 0, 0)
 
-        # 创建安全工具的 QComboBox 控件
+        # “脚本工具”的下拉列表
         self.combo2 = QComboBox(self)
-        self.combo2.addItems(['安全工具', 'OneForAll'])
+        self.combo2.addItems(['脚本工具', 'OneForAll'])
         self.combo2.currentTextChanged.connect(self.on_combobox_ToolTXT) # 当选择改变时连接到槽函数
         grid_layout.addWidget(self.combo2, 0, 1)
 
-        # 创建自写工具的 QComboBox 控件
+        # “自写工具”的下拉列表
         self.combo3 = QComboBox(self)
         self.combo3.addItems(['自写工具', 'Nmap', 'Whois', 'DNS-type'])
         self.combo3.currentTextChanged.connect(self.on_combobox_ToolTXT) # 当选择改变时连接到槽函数
         grid_layout.addWidget(self.combo3, 1, 0, 1, 5)
         self.combo3.setStyleSheet("background-color: #CD661D;")
         
-        # 创建自写工具的输入框、功能按钮
+        # “自写工具”的输入框
         self.unihonest_input1 = add_input("输入框1: 请输入有效参数", 2, 0)
         self.unihonest_input2 = add_input("输入框2: 请输入有效参数", 2, 2)
         scan_button = add_button("Run", 2, 4)
         scan_button.clicked.connect(self.on_button_click)
-        
 
         # Command 控件
-        add_label("Command - 在下面的输入框运行一些命令.", 7, 0)
-        self.command_input = add_input("Enter command", 8, 0, 1, 3)     
-        self.execute_button = add_button("Exec", 8, 3, 1, 1)
+        add_label("Command - 在下面的输入框运行一些命令.", 3, 0)
+        self.command_input = add_input("Enter command", 4, 0, 1, 3)     
+        self.execute_button = add_button("Exec", 4, 3, 1, 1)
         self.execute_button.clicked.connect(self.execute_command)
-        self.cancel_button = add_button("Cancel", 8, 4, 1, 1)
+        self.cancel_button = add_button("Cancel", 4, 4, 1, 1)
         self.cancel_button.clicked.connect(self.cancel_command)
         self.cancel_button.setEnabled(False)                # 初始状态禁用
 
@@ -178,13 +178,16 @@ class MainWindow(QMainWindow):
         # 结果输出区域
         default_txt = "结果输出区域.\n你可以在 Command 执行其他工具命令。"
 
-        self.result_area = add_textarea(default_txt, 9, 0, 1, 5)
+        self.result_area = add_textarea(default_txt, 5, 0, 1, 5)
         self.result_area.setText(default_txt)
 
     # 安全工具的用法文档
     def on_combobox_ToolTXT(self, word_select):
         if word_select == '自写工具':
             self.result_area.setText("自己写的小工具，觉得有用就加进来了。")
+            return
+        elif word_select == '脚本工具':
+            self.result_area.setText("一些GitHub工具, 没有图形化界面。")
             return
 
         try:
@@ -194,7 +197,8 @@ class MainWindow(QMainWindow):
         
         except Exception as e:
             self.result_area.setText(f"Error detail: {str(e)}")
-
+    
+    # 安全新闻的处理函数
     def on_combobox_changed(self, selected_text):
         # 遍历新闻源列表，找到与选择匹配的URL
         for news in self.news_link:
@@ -216,7 +220,7 @@ class MainWindow(QMainWindow):
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open URL', f'Could not open URL: {url_string}')
         else:
-            self.result_area.setText(f"正在打开: {url_string}")
+            self.statusBar().showMessage(f"已打开: {url_string}")
 
     # 自写工具 - 下拉列表 - 传参 - 处理
     def on_button_click(self):
