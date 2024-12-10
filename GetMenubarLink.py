@@ -6,8 +6,8 @@ __license__ = "GNU General Public License v3.0"
 
 # 定义菜单及其子项
 def get_manu_link():
-    menus_and_actions_link = {
-        '安全链接': [
+    menus_and_actions_link1 = {
+        '渗透测试': [
             ('资产测绘', [
                 ('fofa', 'https://fofa.info/'),
                 ('微步在线', 'https://x.threatbook.com/v5/mapping'),
@@ -45,6 +45,19 @@ def get_manu_link():
                 ('微步', 'https://x.threatbook.com/v5/vulIntelligence'),
                 ('火绒', 'https://www.huorong.cn/document/tech/new-all')
             ]),
+            ('综合网站', [
+                ('棱角社区', 'https://forum.ywhack.com/index.php'),
+                ('one-fox', 'https://tool.one-fox.cn/'),
+                ('tidesec', 'http://bypass.tidesec.com/order/')
+            ]),
+            ('子域发现', [
+                ('OneForAll', 'https://github.com/shmilylty/OneForAll')
+            ])
+        ]
+    }
+
+    menus_and_actions_link2 = {
+        '应急响应': [
             ('威胁情报', [
                 ('微步', 'https://x.threatbook.com/'),
                 ('深信服', 'https://ti.sangfor.com.cn/analysis-platform'),
@@ -63,30 +76,37 @@ def get_manu_link():
                 ('安恒', 'https://sandbox.dbappsecurity.com.cn/'),
                 ('哈勃', 'https://habo.qq.com/')
             ]),
-            # ('杀毒软件', [
-            #     ('(Win)360杀毒', 'https://sd.360.cn/download_center.html'),
-            #     ('(Win)火绒', 'https://www.huorong.cn/'),
-            #     ('(Win)天融信', 'http://edr.topsec.com.cn/'),
-            #     ('(Win)卡巴斯基', 'https://www.kaspersky.com.cn/downloads'),
-            #     ('火绒', ''),
-            #     ('火绒', ''),
-            #     ('火绒', ''),
-            #     ('腾讯管家', '')
-            # ]),
-            # ('应急响应', [
-            #     ('(Win)Everything', 'https://www.voidtools.com/zh-cn/downloads/'),
-            #     ('(Win)SysinternalsSuite', 'https://learn.microsoft.com/en-us/sysinternals/downloads/'),
-            #     ('(Win)', ''),
-            #     ('(Win)', ''),
-            #     ('(linux)busybox', 'https://busybox.net/'),
-            #     ('火绒', ''),
-            #     ('火绒', ''),
-            #     ('腾讯管家', '')
-            # ]),
+            ('杀毒软件', [
+                ('(Win)360杀毒', 'https://sd.360.cn/download_center.html'),
+                ('(Win)火绒', 'https://www.huorong.cn/'),
+                ('(Win)天融信', 'http://edr.topsec.com.cn/'),
+                ('(Win)卡巴斯基', 'https://www.kaspersky.com.cn/downloads'),
+                # ('(Linux)clamav', 'https://www.clamav.net/downloads')
+            ]),
+            ('辅助工具', [
+                ('(Win)Everything', 'https://www.voidtools.com/zh-cn/downloads/'),
+                ('(Win)SysinternalsSuite', 'https://learn.microsoft.com/en-us/sysinternals/downloads/'),
+                # ('(Win)', ''),
+                # ('(Win)', ''),
+                ('(linux)busybox', 'https://busybox.net/')
+            ]),
             ('勒索解密', [
                 ('360', 'https://lesuobingdu.360.cn/'),
                 ('奇安信', 'https://lesuobingdu.qianxin.com/'),
                 ('腾讯管家', 'https://guanjia.qq.com/pr/ls/')
+            ])
+        ]
+    }
+    menus_and_actions_link3 = {
+        '新闻资讯': [
+            ('安全新闻', [
+                ('freebuf', 'https://www.freebuf.com/'),
+                ('安全内参', 'https://www.secrss.com/'),
+                ('cnvd', 'https://www.cnvd.org.cn/'),
+                ('蚁景新闻', 'https://www.yijinglab.com/news')
+            ]),
+            ('国外平台', [
+                ('thehackernews', 'https://thehackernews.com/')
             ]),
             ('博客社区', [
                 ('个人知识库', 'https://www.yuque.com/unihonest/netsecdef'),
@@ -101,16 +121,12 @@ def get_manu_link():
                 ('补天社区', 'https://forum.butian.net/'),
                 ('土司', 'https://www.t00ls.com/')
             ]),
-            ('综合网站', [
-                ('棱角社区', 'https://forum.ywhack.com/index.php'),
-                ('one-fox', 'https://tool.one-fox.cn/'),
-                ('tidesec', 'http://bypass.tidesec.com/order/')
-            ]),
             ('开源镜像', [
                 ('清华大学', 'https://mirrors.tuna.tsinghua.edu.cn/'),
-                ('中科大', 'https://mirrors.ustc.edu.cn/')
+                ('中科大', 'https://mirrors.ustc.edu.cn/'),
+                ('阿里云', 'https://developer.aliyun.com/mirror/')
             ])
         ]
     }
     
-    return menus_and_actions_link
+    return menus_and_actions_link1, menus_and_actions_link2, menus_and_actions_link3

@@ -6,7 +6,7 @@
 
 ## 安装
 
-建议在虚拟环境下使用，如：conda create -n unihonest python=3.12
+建议在虚拟环境下使用，如：conda create -n unihonest python=3.12.7
 
 1. `git clone https://github.com/unihonest/UnihonestToolbox.git`
 2. `python -V`
@@ -16,7 +16,7 @@
 
 ## 界面
 
-![1733641366008](image/README/1733641366008.png)
+![1733835357435](image/README/1733835357435.png)
 
 ## 其他工具使用
 

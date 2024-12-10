@@ -2,3 +2,4 @@ PyQt6
 python-nmap
 prettytable
 dnspython
+pyfiglet

@@ -16,14 +16,7 @@ def normalize_spaces(text):
 
 # 工具的使用文档
 def get_tool_txt(value):
-    if value == "OneForAll":
-        tool_txt = f''' 子域收集工具: https://github.com/shmilylty/OneForAll\n
-            查看帮助: python oneforall.py -h\n
-            禁用字典测试: python oneforall.py --target domain.com --brute False run\n
-        '''
-        return normalize_spaces(tool_txt)
-    
-    elif value == "Nmap":
+    if value == "Nmap":
         tool_txt = f''' nmap 功能需在本地安装 nmap 软件。\n
             下载: https://nmap.org/download\n
             校验 hash: https://nmap.org/dist/sigs/\n\n
