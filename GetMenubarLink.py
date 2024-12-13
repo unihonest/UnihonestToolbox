@@ -81,14 +81,34 @@ def get_manu_link():
                 ('(Win)火绒', 'https://www.huorong.cn/'),
                 ('(Win)天融信', 'http://edr.topsec.com.cn/'),
                 ('(Win)卡巴斯基', 'https://www.kaspersky.com.cn/downloads'),
-                # ('(Linux)clamav', 'https://www.clamav.net/downloads')
+                ('(Linux)clamav', 'https://www.clamav.net/')
             ]),
-            ('辅助工具', [
-                ('(Win)Everything', 'https://www.voidtools.com/zh-cn/downloads/'),
+            ('木马专杀',[
+                ('D盾', 'https://www.d99net.net/'),
+                ('河马在线', 'https://n.shellpub.com/'),
+                ('河马本地', 'https://www.shellpub.com/?download=1'),
+                ('昆吾在线', 'https://ti.moresec.cn/'),
+                ('昆吾本地', 'https://github.com/kunwu2023/kunwu')
+            ]),
+            ('综合工具', [
                 ('(Win)SysinternalsSuite', 'https://learn.microsoft.com/en-us/sysinternals/downloads/'),
-                # ('(Win)', ''),
-                # ('(Win)', ''),
-                ('(linux)busybox', 'https://busybox.net/')
+                ('(Linux)LinuxCheck', 'https://github.com/al0ne/LinuxCheck'),
+                ('(Linux)FireKylin', 'https://github.com/MountCloud/FireKylin'),
+                ('(Linux)Gscan', 'https://github.com/grayddq/Gscan'),
+                ('(Linux)busybox', 'https://busybox.net/'),
+                ('ABC_123工具箱', 'https://github.com/abc123info/BlueTeamTools'),
+                ('知攻善防工具箱', 'https://github.com/ChinaRan0/BlueTeamTools'),
+                ('戎码工具箱', 'https://github.com/RoomaSec/RmTools')
+            ]),
+            ('辅助分析',[
+                ('(Win)Everything', 'https://www.voidtools.com/zh-cn/downloads/'),
+                ('(Win)chromecacheview', 'http://www.nirsoft.net/utils/chrome_cache_view.html'),
+                ('(Win)browsinghistoryview', 'http://www.nirsoft.net/utils/browsing_history_view.html'),
+                ('(Win)wifihistoryview', 'http://www.nirsoft.net/utils/wifi_history_view.html')
+            ]),
+            ('口令破解',[
+                ('(Win)week-passwd','https://github.com/BBD-YZZ/week-passwd'),
+                ('(Linux)hydra', 'https://github.com/vanhauser-thc/thc-hydra')
             ]),
             ('勒索解密', [
                 ('360', 'https://lesuobingdu.360.cn/'),
@@ -103,7 +123,8 @@ def get_manu_link():
                 ('freebuf', 'https://www.freebuf.com/'),
                 ('安全内参', 'https://www.secrss.com/'),
                 ('cnvd', 'https://www.cnvd.org.cn/'),
-                ('蚁景新闻', 'https://www.yijinglab.com/news')
+                ('蚁景新闻', 'https://www.yijinglab.com/news'),
+                ('goupsec', 'https://www.goupsec.com/category/news')
             ]),
             ('国外平台', [
                 ('thehackernews', 'https://thehackernews.com/')
@@ -119,7 +140,8 @@ def get_manu_link():
                 ('sec-wiki', 'https://www.sec-wiki.com/'),
                 ('安全牛', 'https://www.aqniu.com/'),
                 ('补天社区', 'https://forum.butian.net/'),
-                ('土司', 'https://www.t00ls.com/')
+                ('土司', 'https://www.t00ls.com/'),
+                ('白帽Wiki', 'https://key08.com/')
             ]),
             ('开源镜像', [
                 ('清华大学', 'https://mirrors.tuna.tsinghua.edu.cn/'),
