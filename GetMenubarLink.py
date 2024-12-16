@@ -86,25 +86,36 @@ def get_manu_link():
             ('木马专杀',[
                 ('D盾', 'https://www.d99net.net/'),
                 ('河马在线', 'https://n.shellpub.com/'),
-                ('河马本地', 'https://www.shellpub.com/?download=1'),
-                ('昆吾在线', 'https://ti.moresec.cn/'),
-                ('昆吾本地', 'https://github.com/kunwu2023/kunwu')
+                ('河马本地', 'https://www.shellpub.com/?download=1')
             ]),
             ('综合工具', [
                 ('(Win)SysinternalsSuite', 'https://learn.microsoft.com/en-us/sysinternals/downloads/'),
+                ('(Win)FindAll', 'https://github.com/FindAllTeam/FindAll'),
                 ('(Linux)LinuxCheck', 'https://github.com/al0ne/LinuxCheck'),
                 ('(Linux)FireKylin', 'https://github.com/MountCloud/FireKylin'),
                 ('(Linux)Gscan', 'https://github.com/grayddq/Gscan'),
                 ('(Linux)busybox', 'https://busybox.net/'),
-                ('ABC_123工具箱', 'https://github.com/abc123info/BlueTeamTools'),
-                ('知攻善防工具箱', 'https://github.com/ChinaRan0/BlueTeamTools'),
-                ('戎码工具箱', 'https://github.com/RoomaSec/RmTools')
+                ('(工具箱)ABC_123', 'https://github.com/abc123info/BlueTeamTools'),
+                ('(工具箱)知攻善防', 'https://github.com/ChinaRan0/BlueTeamTools'),
+                ('(工具箱)戎码', 'https://github.com/RoomaSec/RmTools')
             ]),
             ('辅助分析',[
+                ('(Win)WinPrefetchView', 'https://www.nirsoft.net/utils/win_prefetch_view.html'),
                 ('(Win)Everything', 'https://www.voidtools.com/zh-cn/downloads/'),
-                ('(Win)chromecacheview', 'http://www.nirsoft.net/utils/chrome_cache_view.html'),
-                ('(Win)browsinghistoryview', 'http://www.nirsoft.net/utils/browsing_history_view.html'),
-                ('(Win)wifihistoryview', 'http://www.nirsoft.net/utils/wifi_history_view.html')
+                ('(Win)ChromeCacheView', 'http://www.nirsoft.net/utils/chrome_cache_view.html'),
+                ('(Win)VrowsingHistoryView', 'http://www.nirsoft.net/utils/browsing_history_view.html'),
+                ('(Win)WifiHistoryView', 'http://www.nirsoft.net/utils/wifi_history_view.html'),
+                ('(编码)CyberChef', 'https://github.com/gchq/CyberChef/')
+            ]),
+            ('流量分析',[
+                ('wireshark', 'https://www.wireshark.org/'),
+                ('burp', 'https://portswigger.net/burp/communitydownload'),
+                ('fiddler', 'https://www.telerik.com/download/fiddler')
+            ]),
+            ('日志分析',[
+                ('(Win)APT-Hunter', 'https://github.com/ahmedkhlief/APT-Hunter'),
+                ('(Win)full_event_log_view', 'https://www.nirsoft.net/utils/full_event_log_view.html'),
+                ('(Win)Log Parser', 'https://www.microsoft.com/en-us/download/details.aspx?id=24659&lc=1033')
             ]),
             ('口令破解',[
                 ('(Win)week-passwd','https://github.com/BBD-YZZ/week-passwd'),
