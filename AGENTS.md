@@ -14,42 +14,61 @@ python MainWindow.py
 
 ## Architecture
 
-单文件 GUI 应用，`MainWindow.py` 是入口与核心控制器。六个功能模块被作为函数导入：
+单文件 GUI 应用 → 已重构为分层架构，`MainWindow.py` 是轻量入口和路由控制器。
 
-| 模块 | 导出函数 | 用途 |
-|------|---------|------|
-| `FunNmapScanner.py` | `NmapScan(ip, arguments)` | Nmap 扫描 → 调用 `FunNmapLogFile` 保存 CSV |
-| `FunNmapLogFile.py` | `save_to_csv()`, `csv_to_table()` | CSV 日志 + PrettyTable 格式化 |
-| `FunDNSType.py` | `save_dns_records_to_log(domain, dns_servers)` | DNS 多类型记录查询 |
-| `FunWhoisInfo.py` | `whois_txt(domain)` | 原始 socket WHOIS 查询 |
-| `FunReverseShell.py` | `update_shell_reverse(ip, port, format)`, `shell_to_base64(text, option)` | 反弹 Shell 命令生成 |
-| `GetDarkCSS.py` | `darkcss()` | Qt 暗色主题样式表 |
-| `GetMenubarLink.py` | `get_manu_link()` | 返回 3 个字典：渗透测试、应急响应、新闻资讯 |
-| `GetToolTXT.py` | `get_tool_txt(value)` | 工具使用说明文档 |
+```
+UnihonestToolbox/
+├── MainWindow.py              # 入口，QTabWidget + 工具路由
+├── config/
+│   ├── settings.py            # 窗口大小、日志路径、默认参数
+│   └── links.py               # 菜单栏外部链接数据
+├── ui/
+│   ├── theme.py               # 暗色主题 QSS 样式 (原 GetDarkCSS)
+│   ├── widgets.py             # 可复用控件工厂
+│   ├── tool_text.py           # 工具使用说明 (原 GetToolTXT)
+│   └── pages/
+│       ├── nmap_page.py       # Nmap 扫描面板
+│       ├── dns_page.py        # DNS 查询面板
+│       ├── whois_page.py      # WHOIS 查询面板
+│       ├── shell_page.py      # 反弹Shell/Base64 面板
+│       └── cmd_page.py        # 命令执行面板
+├── tools/
+│   ├── nmap_scanner.py        # Nmap 扫描 + CSV 日志
+│   ├── dns_lookup.py          # DNS 多类型记录查询
+│   ├── whois_query.py         # 原始 socket WHOIS
+│   └── reverse_shell.py       # 反弹 Shell/Base64 生成
+└── utils/
+    ├── helpers.py              # 字体加载 (原 get_loacl_font)、ASCII 艺术
+    └── logger.py               # 统一日志
+```
 
-`MainWindow` 是唯一的类（`QMainWindow` 子类），所有 UI 通过 `__init__` 内的嵌套工厂函数 `add_label/input/textarea/button` 构建，布局为 `QVBoxLayout` + `QGridLayout` → `QFrame` → `QScrollArea`。
+**数据流**：`MainWindow` → 下拉列表选择 → 懒加载对应 `ui/pages/*.py` → 用户输入 → 调用 `tools/*.py` → 回调更新 `result_area`。
+
+**旧文件**（`Fun*.py`, `Get*.py`）保留用于向后兼容，新代码不再依赖它们。
 
 ## Code Style
 
 - 所有文件 UTF-8 + `# -*- coding: utf-8 -*-`，中文注释和字符串普遍存在
-- 公开函数：`snake_case`（如 `save_dns_records_to_log`, `get_manu_link`）
-- 类名：`PascalCase`（仅 `MainWindow`）
-- 槽函数：`on_` 前缀（如 `on_button_click`, `on_combobox_ToolTXT`）
-- 模块文件：`Get`/`Fun` 前缀 + PascalCase（如 `FunNmapScanner.py`, `GetDarkCSS.py`）
-- 实例变量：`snake_case`（如 `self.result_area`, `self.unihonest_input1`）
+- 公开函数：`snake_case`（如 `save_dns_records_to_log`, `get_menu_links`）
+- 类名：`PascalCase`（如 `MainWindow`, `NmapPage`, `DnsPage`）
+- 槽函数：`on_` 前缀（如 `_on_tool_changed`, `_on_scan`）
+- 模块文件：新模块用 `snake_case`（如 `nmap_scanner.py`, `dns_lookup.py`）；旧模块保留 `Get`/`Fun` 前缀 + PascalCase
+- 实例变量：`snake_case`（如 `self.result_area`, `self.tool_combo`）
 
 ## PyQt6 Patterns
 
-- **控件工厂**：`MainWindow.__init__` 内定义的嵌套函数创建控件并添加到网格布局，不可移到类外部。
-- **Placeholder 实现**：通过直接替换 `QLineEdit.focusInEvent` / `focusOutEvent` 实现（monkey-patch，非子类化重写）。创建新 `QLineEdit` 时需复制此模式。
-- **样式**：全局 `app.setStyleSheet(darkcss())`，个别控件可用 `widget.setStyleSheet()` 覆盖。
-- **线程**：子进程通过 `threading.Thread(daemon=True)` + `QTimer(50ms)` + `threading.Lock()` 异步运行。
-- **菜单**：`get_manu_link()` 返回 3 个嵌套字典的元组，用索引 `[0]`/`[1]`/`[2]` 访问。
+- **控件工厂**：`ui/widgets.py` 提供 `create_label/input/output/button`，页面通过 `layout.addWidget(widget, row, col, rowspan, colspan)` 布局。
+- **Placeholder 实现**：`QLineEdit.focusInEvent/focusOutEvent` monkey-patch 实现（`widgets.py` 内），非子类化。
+- **工具页面**：每个工具一个 `ui/pages/*.py`，继承 `QWidget`，通过 `status_callback` 和 `result_callback` 与主窗口通信。
+- **懒加载**：`MainWindow._get_or_create_page()` 按需创建页面并缓存。
+- **样式**：全局 `app.setStyleSheet(darkcss())` + `ui/theme.py`。
+- **线程**：`cmd_page.py` 使用 `threading.Thread(daemon=True)` + `QTimer(50ms)` 异步执行命令。
+- **菜单**：`config/links.py` 的 `get_menu_links()` 返回 3 个字典元组，索引 `[0]/[1]/[2]` 访问。
 
 ## Gotchas
 
 1. **Lambda 闭包陷阱**：菜单链接回调用 `lambda checked, u=url: webbrowser.open(u)`（默认参数捕获），不要简化为 `lambda: webbrowser.open(url)`。
-2. **`MainWindow.py` 第 239 行**：`save_dns_records_to_log(input1, )` 缺少第二个参数 `dns_servers`，调用会失败。
-3. **无外部配置文件**：所有配置硬编码在源码中（日志路径、窗口大小 739×500、URL 列表）。
-4. **日志目录**：运行时在脚本所在目录创建 `nmaplog/`、`dnstypelog/`、`whoislog/`。
+2. **工具页面添加**：新增工具需要 ① `tools/` 下写逻辑 ② `ui/pages/` 下写面板 ③ `MainWindow._get_or_create_page()` 注册。
+3. **无外部配置文件**：所有配置在 `config/settings.py` 和 `config/links.py` 中。
+4. **日志目录**：运行时在项目根目录创建 `UserLog/`，已加入 `.gitignore`。
 5. **字体**：优先加载本地 `SarasaFixedSC-Light.ttf`，失败时回退 `Consolas`。

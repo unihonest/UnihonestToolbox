@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""暗色主题 CSS 样式表"""
 
-__author__ = "unihonest"
-__license__ = "GNU General Public License v3.0"
 
-def darkcss():
-    dark_style = """
+def darkcss() -> str:
+    return """
         QMainWindow {
             background-color: #969696;
             color: #FFFFFF;
@@ -15,11 +13,11 @@ def darkcss():
             color: #FFFFFF;
         }
         QStatusBar {
-            background-color: #515151;  /* 状态栏背景颜色 */
-            color: #FFFFFF;             /* 状态栏文本颜色 */
+            background-color: #515151;
+            color: #FFFFFF;
             border-radius: 1px;
         }
-        QStatusBar::item {              /* 状态栏项的样式 */
+        QStatusBar::item {
             border: none;
         }
         QLabel {
@@ -69,13 +67,6 @@ def darkcss():
             padding: 5px;
             border-radius: 3px;
         }
-        QComboBox {
-            background-color: #515151;
-            border: 1px solid #404040;
-            color: #FFFFFF;
-            padding: 5px;
-            border-radius: 3px;
-        }
         QComboBox QAbstractItemView {
             background-color: #3C3F41;
             color: #FFFFFF;
@@ -97,11 +88,11 @@ def darkcss():
         QMenuBar::item {
             padding: 8px 16px;
             background-color: transparent;
-            spacing: 3px; /* 菜单项之间的间距 */
+            spacing: 3px;
             margin: 0px 4px;
             border-radius: 3px;
         }
-        QMenuBar::item:selected { 
+        QMenuBar::item:selected {
             background-color: #6A6A6A;
         }
         QMenuBar::item:pressed {
@@ -114,20 +105,68 @@ def darkcss():
         }
         QMenu::item {
             padding: 5px 25px 5px 20px;
-            border: 1px solid transparent; /* 未选中时不显示边框 */
+            border: 1px solid transparent;
             background-color: transparent;
         }
-        QMenu::item:selected { 
+        QMenu::item:selected {
             background-color: #6A6A6A;
-            border-color: #404040;
         }
-        QMenu::icon {
-            padding-left: 10px;
+        QScrollBar:vertical {
+            background: #515151;
+            width: 12px;
+            margin: 0px;
         }
-        QMenu::separator {
-            height: 1px;
-            background: #404040;
-            margin: 4px 8px;
+        QScrollBar::handle:vertical {
+            background: #6A6A6A;
+            min-height: 20px;
+            border-radius: 3px;
+        }
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+            height: 0px;
+        }
+        QScrollBar:horizontal {
+            background: #515151;
+            height: 12px;
+            margin: 0px;
+        }
+        QScrollBar::handle:horizontal {
+            background: #6A6A6A;
+            min-width: 20px;
+            border-radius: 3px;
+        }
+        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+            width: 0px;
+        }
+        QTabWidget::pane {
+            border: 1px solid #404040;
+            background-color: #969696;
+        }
+        QTabBar::tab {
+            background-color: #515151;
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border: 1px solid #404040;
+            border-bottom: none;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        QTabBar::tab:selected {
+            background-color: #CD661D;
+        }
+        QTabBar::tab:hover:!selected {
+            background-color: #6A6A6A;
+        }
+        QGroupBox {
+            border: 1px solid #404040;
+            border-radius: 4px;
+            margin-top: 10px;
+            padding-top: 15px;
+            color: #FFFFFF;
+        }
+        QGroupBox::title {
+            subcontrol-origin: margin;
+            left: 10px;
+            padding: 0 5px;
+            color: #CD661D;
         }
     """
-    return dark_style
