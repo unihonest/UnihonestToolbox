@@ -15,22 +15,6 @@ def create_label(text: str) -> QLabel:
     return label
 
 
-def create_title(text: str) -> QLabel:
-    """创建工具页面标题（无背景拉伸）"""
-    label = QLabel(text)
-    label.setStyleSheet("""
-        QLabel {
-            background-color: transparent;
-            color: #CD661D;
-            font-size: 14px;
-            font-weight: bold;
-            padding: 4px 0;
-            border: none;
-        }
-    """)
-    return label
-
-
 def create_input(placeholder: str) -> QLineEdit:
     """创建带 placeholder 提示的输入框（使用原生 setPlaceholderText）"""
     input_field = QLineEdit()

@@ -2,7 +2,6 @@
 """Nmap 扫描 + CSV 日志"""
 
 import csv
-import re
 from datetime import datetime
 from pathlib import Path
 

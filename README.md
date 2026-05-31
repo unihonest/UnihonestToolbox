@@ -9,6 +9,7 @@
 | **Nmap 扫描** | 封装 Nmap 端口扫描，自定义参数，结果自动保存为 CSV 并格式化展示 |
 | **WHOIS 查询** | 原始 Socket 连接 WHOIS 服务器，支持自定义服务器地址 |
 | **DNS 记录查询** | 支持 A / AAAA / CNAME / MX / NS / TXT / SOA / PTR / SRV / CAA / TLSA / SSHFP 共 12 种记录类型 |
+| **IP 子网计算** | IPv4/IPv6 自动识别，零依赖纯本地计算 |
 | **密码强度分析** | 内置 SecLists Top 200 弱口令库，支持批量检测，可一键下载完整字典 |
 | **命令执行** | 内建 Shell 终端，异步执行不阻塞 UI，支持中断 |
 
@@ -24,12 +25,14 @@ UnihonestToolbox/
 │   ├── theme.py               # 暗色主题 QSS
 │   ├── widgets.py             # 可复用控件工厂
 │   ├── tool_text.py           # 工具使用说明
-│   └── pages/                 # 工具面板（Nmap / DNS / Whois / 密码 / 命令）
+│   └── pages/                 # 工具面板（Nmap / DNS / Whois / IP / 密码 / 命令）
 ├── tools/
 │   ├── nmap_scanner.py        # Nmap 扫描 + CSV 日志
 │   ├── dns_lookup.py          # DNS 多类型记录查询
 │   ├── whois_query.py         # 原始 Socket WHOIS
-│   └── password_checker.py   # 密码强度分析 + 字典下载
+│   ├── ipv4_calculator.py     # IPv4 子网计算
+│   ├── ipv6_calculator.py     # IPv6 子网计算
+│   └── password_checker.py    # 密码强度分析 + 字典下载
 └── utils/
     ├── helpers.py              # 字体加载、ASCII 艺术字
     └── logger.py               # 统一日志系统

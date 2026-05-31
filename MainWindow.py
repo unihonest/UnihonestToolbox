@@ -24,6 +24,7 @@ from ui.pages.dns_page import DnsPage
 from ui.pages.whois_page import WhoisPage
 from ui.pages.cmd_page import CmdPage
 from ui.pages.password_page import PasswordPage
+from ui.pages.ip_page import IpPage
 from utils.helpers import load_font, get_figlet_art
 
 
@@ -51,7 +52,7 @@ class MainWindow(QMainWindow):
         top_bar.addWidget(label)
         self.tool_combo = QComboBox()
         self.tool_combo.addItems([
-            "自写工具",
+            "自写工具", "IP计算器",
             "Nmap", "Whois", "DNS-type", "命令执行", "弱口令检测",
         ])
         self.tool_combo.setStyleSheet("background-color: #CD661D;")
@@ -143,6 +144,11 @@ class MainWindow(QMainWindow):
             )
         elif name == "弱口令检测":
             page = PasswordPage(
+                status_callback=self.statusBar().showMessage,
+                result_callback=self.result_area.setText,
+            )
+        elif name == "IP计算器":
+            page = IpPage(
                 status_callback=self.statusBar().showMessage,
                 result_callback=self.result_area.setText,
             )
