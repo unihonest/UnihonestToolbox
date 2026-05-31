@@ -14,11 +14,11 @@ def get_menu_links():
                 ("奇安信鹰图", "https://hunter.qianxin.com/"),
                 ("360quake", "https://quake.360.net/"),
                 ("zoomeye", "https://www.zoomeye.org/"),
-                ("daydaymap", "https://www.daydaymap.com/"),
+                ("censys", "https://search.censys.io/"),
+                ("shodan", "https://www.shodan.io/"),
             ]),
             ("搜索引擎", [
                 ("google", "https://www.google.com/"),
-                ("shodan", "https://www.shodan.io/"),
                 ("百度", "https://www.baidu.com/"),
             ]),
             ("代码托管", [
@@ -28,27 +28,17 @@ def get_menu_links():
             ("站长工具", [
                 ("chinaz", "https://ip.tool.chinaz.com/"),
                 ("ip138", "https://www.ip138.com/"),
-                ("备案", "https://beian.miit.gov.cn/#/Integrated/index"),
             ]),
             ("企业信息", [
-                ("零零信安", "https://0.zone/"),
                 ("天眼查", "https://www.tianyancha.com/"),
                 ("企查查", "https://www.qcc.com/"),
                 ("爱企查", "https://aiqicha.baidu.com/"),
-                ("小蓝本", "https://sou.xiaolanben.com/pc"),
             ]),
             ("漏洞查询", [
                 ("cnvd", "https://www.cnvd.org.cn/flaw/list"),
                 ("知道创宇", "https://www.seebug.org/?s1=search#"),
                 ("阿里云", "https://avd.aliyun.com/"),
-                ("长亭", "https://stack.chaitin.com/vuldb/index"),
                 ("微步", "https://x.threatbook.com/v5/vulIntelligence"),
-                ("火绒", "https://www.huorong.cn/document/tech/new-all"),
-            ]),
-            ("综合网站", [
-                ("棱角社区", "https://forum.ywhack.com/index.php"),
-                ("one-fox", "https://tool.one-fox.cn/"),
-                ("tidesec", "http://bypass.tidesec.com/order/"),
             ]),
             ("子域发现", [
                 ("OneForAll", "https://github.com/shmilylty/OneForAll"),
@@ -64,7 +54,6 @@ def get_menu_links():
                 ("绿盟", "https://ti.nsfocus.com/"),
                 ("奇安信", "https://ti.qianxin.com/"),
                 ("360", "https://ti.360.net/"),
-                ("安恒", "https://ti.dbappsecurity.com.cn/"),
             ]),
             ("云沙箱", [
                 ("微步", "https://s.threatbook.com/"),
@@ -74,7 +63,6 @@ def get_menu_links():
                 ("天穹", "https://sandbox.qianxin.com/sscc-tq-web/"),
                 ("360", "https://ata.360.net/"),
                 ("安恒", "https://sandbox.dbappsecurity.com.cn/"),
-                ("哈勃", "https://habo.qq.com/"),
             ]),
             ("杀毒软件", [
                 ("(Win)360杀毒", "https://sd.360.cn/download_center.html"),
@@ -90,14 +78,7 @@ def get_menu_links():
             ]),
             ("综合工具", [
                 ("(Win)SysinternalsSuite", "https://learn.microsoft.com/en-us/sysinternals/downloads/"),
-                ("(Win)FindAll", "https://github.com/FindAllTeam/FindAll"),
-                ("(Linux)LinuxCheck", "https://github.com/al0ne/LinuxCheck"),
-                ("(Linux)FireKylin", "https://github.com/MountCloud/FireKylin"),
-                ("(Linux)Gscan", "https://github.com/grayddq/Gscan"),
                 ("(Linux)busybox", "https://busybox.net/"),
-                ("(工具箱)ABC_123", "https://github.com/abc123info/BlueTeamTools"),
-                ("(工具箱)知攻善防", "https://github.com/ChinaRan0/BlueTeamTools"),
-                ("(工具箱)戎码", "https://github.com/RoomaSec/RmTools"),
             ]),
             ("辅助分析", [
                 ("(Win)WinPrefetchView", "https://www.nirsoft.net/utils/win_prefetch_view.html"),
@@ -105,7 +86,6 @@ def get_menu_links():
                 ("(Win)ChromeCacheView", "http://www.nirsoft.net/utils/chrome_cache_view.html"),
                 ("(Win)BrowsingHistoryView", "http://www.nirsoft.net/utils/browsing_history_view.html"),
                 ("(Win)WifiHistoryView", "http://www.nirsoft.net/utils/wifi_history_view.html"),
-                ("(编码)CyberChef", "https://github.com/gchq/CyberChef/"),
             ]),
             ("流量分析", [
                 ("wireshark", "https://www.wireshark.org/"),
@@ -113,18 +93,13 @@ def get_menu_links():
                 ("fiddler", "https://www.telerik.com/download/fiddler"),
             ]),
             ("日志分析", [
-                ("(Win)APT-Hunter", "https://github.com/ahmedkhlief/APT-Hunter"),
                 ("(Win)full_event_log_view", "https://www.nirsoft.net/utils/full_event_log_view.html"),
                 ("(Win)Log Parser", "https://www.microsoft.com/en-us/download/details.aspx?id=24659"),
             ]),
-            ("口令破解", [
-                ("(Win)week-passwd", "https://github.com/BBD-YZZ/week-passwd"),
-                ("(Linux)hydra", "https://github.com/vanhauser-thc/thc-hydra"),
-            ]),
             ("勒索解密", [
+                ("腾讯管家", "https://guanjia.qq.com/pr/ls/"),
                 ("360", "https://lesuobingdu.360.cn/"),
                 ("奇安信", "https://lesuobingdu.qianxin.com/"),
-                ("腾讯管家", "https://guanjia.qq.com/pr/ls/"),
             ]),
         ]
     }
@@ -136,26 +111,17 @@ def get_menu_links():
                 ("安全内参", "https://www.secrss.com/"),
                 ("cnvd", "https://www.cnvd.org.cn/"),
                 ("蚁景新闻", "https://www.yijinglab.com/news"),
-                ("goupsec", "https://www.goupsec.com/category/news"),
             ]),
             ("国外平台", [
                 ("thehackernews", "https://thehackernews.com/"),
             ]),
             ("博客社区", [
-                ("个人知识库", "https://www.yuque.com/unihonest/netsecdef"),
-                ("知道创宇", "https://paper.seebug.org/"),
+                ("个人知识库", "https://www.yuque.com/unihonest/"),
                 ("freebuf", "https://www.freebuf.com/"),
                 ("安全客", "https://www.anquanke.com/"),
                 ("先知社区", "https://xz.aliyun.com/"),
-                ("漏见网安", "https://wechat.doonsec.com/"),
-                ("cn-sec", "https://cn-sec.com/"),
-                ("sec-wiki", "https://www.sec-wiki.com/"),
-                ("安全牛", "https://www.aqniu.com/"),
-                ("补天社区", "https://forum.butian.net/"),
-                ("土司", "https://www.t00ls.com/"),
-                ("白帽Wiki", "https://key08.com/"),
             ]),
-            ("开源镜像", [
+            ("软件镜像", [
                 ("清华大学", "https://mirrors.tuna.tsinghua.edu.cn/"),
                 ("中科大", "https://mirrors.ustc.edu.cn/"),
                 ("阿里云", "https://developer.aliyun.com/mirror/"),

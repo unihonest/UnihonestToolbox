@@ -38,4 +38,14 @@ def get_tool_txt(value: str) -> str:
             "nslookup -query=any unihonest.github.io\n"
             "nslookup unihonest.github.io 8.8.8.8"
         )
+    elif value == "弱口令检测":
+        return _normalize(
+            "密码强度分析工具\n\n"
+            "内置 Top 200 常见弱口令库（来源 SecLists/RockYou），\n"
+            "从 5 个维度检测密码强度：\n"
+            "弱口令库命中 / 长度 / 字符类型 / 重复模式 / 键盘序列\n\n"
+            '点击"下载完整字典"可获取 Top 10000 弱口令库。\n\n'
+            "举🌰:\n"
+            "输入: admin123"
+        )
     return ""

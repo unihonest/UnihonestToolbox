@@ -9,7 +9,7 @@ from PyQt6.QtGui import QFont, QFontDatabase
 def load_font():
     """加载本地更纱黑体，失败则回退 Consolas"""
     current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    font_path = os.path.join(current_dir, "SarasaFixedSC-TTF-1.0.24", "SarasaFixedSC-Light.ttf")
+    font_path = os.path.join(current_dir, "font", "SarasaFixedSC-Light.ttf")
 
     if not os.path.exists(font_path):
         print(f"Font file not found at: {font_path}")

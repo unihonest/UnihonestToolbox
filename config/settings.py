@@ -25,4 +25,5 @@ TOOLS = [
     ("Nmap", "ui.pages.nmap_page"),
     ("Whois", "ui.pages.whois_page"),
     ("DNS-type", "ui.pages.dns_page"),
+    ("弱口令检测", "ui.pages.password_page"),
 ]
