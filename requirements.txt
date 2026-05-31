@@ -1,5 +1,5 @@
-PyQt6
-python-nmap
-prettytable
-dnspython
-pyfiglet
+PyQt6>=6.6,<7
+python-nmap>=0.7
+prettytable>=3.0
+dnspython>=2.6
+pyfiglet>=1.0
