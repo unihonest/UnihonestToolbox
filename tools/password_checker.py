@@ -3,9 +3,11 @@
 
 import re
 import urllib.request
+import ssl
 from pathlib import Path
 
 from config.settings import LOG_DIRS
+from utils.settings_manager import get_proxy, is_proxy_enabled
 
 # ── 内置 Top 200 常见弱口令（来源于 SecLists / RockYou 泄露统计） ──
 TOP_200_WEAK = [
@@ -76,13 +78,47 @@ def download_full_wordlist() -> tuple:
     dir_path.mkdir(parents=True, exist_ok=True)
     save_path = dir_path / "weak_passwords.txt"
 
+    proxy_addr = get_proxy()
+    proxy_on = is_proxy_enabled()
+
     try:
-        urllib.request.urlretrieve(SECLISTS_URL, save_path)
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+
+        https_handler = urllib.request.HTTPSHandler(context=context)
+
+        if proxy_on:
+            proxy = urllib.request.ProxyHandler({
+                "http": f"http://{proxy_addr}",
+                "https": f"http://{proxy_addr}",
+            })
+            opener = urllib.request.build_opener(proxy, https_handler)
+        else:
+            opener = urllib.request.build_opener(https_handler)
+
+        urllib.request.install_opener(opener)
+
+        req = urllib.request.Request(SECLISTS_URL, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) UnihonestToolbox/2.0",
+        })
+
+        with opener.open(req, timeout=30) as resp:
+            body = resp.read()
+
+        if not body:
+            return "下载失败: 服务器返回空内容", 0
+
+        with open(save_path, "wb") as f:
+            f.write(body)
+
         count = 0
         with open(save_path, "r", encoding="utf-8", errors="ignore") as f:
             count = sum(1 for _ in f)
+
+        proxy_info = f"走代理 {proxy_addr}" if proxy_on else "直连（代理已关闭）"
         return (
-            f"下载方式: Python urllib.request 从 GitHub Raw 直链下载\n"
+            f"下载方式: Python urllib.request (GitHub Raw 直链, {proxy_info})\n"
             f"──────────────────────────────\n"
             f"下载地址: {SECLISTS_URL}\n"
             f"保存路径: {save_path}\n"
@@ -94,10 +130,82 @@ def download_full_wordlist() -> tuple:
             f"如需删除: 删除 UserLog 目录即可"
         ), count
     except Exception as e:
-        return f"下载失败: {e}", 0
+        hint = f"请确保代理已开启 ({proxy_addr})" if proxy_on else "可尝试开启代理后重试"
+        return f"下载失败: {e}\n提示: {hint}", 0
 
 
-# ── 密码强度分析 ──
+# ── 密码强度分析核心引擎 ──
+
+def _rate_password(pwd: str, wordlist: list) -> dict:
+    """评估单个密码，返回完整检测结果 dict"""
+    result = {
+        "issues": 0,
+        "level": "🟢",
+        "reasons": [],
+        "checks": [],  # (icon, name, detail)
+    }
+
+    # ① 弱口令库命中
+    if pwd.lower() in wordlist:
+        result["issues"] += 1
+        result["reasons"].append(f"命中弱口令库(#{wordlist.index(pwd.lower())+1})")
+        result["checks"].append(("🔴", "弱口令库", f"命中常见弱口令（排名 {wordlist.index(pwd.lower())+1}）"))
+    else:
+        result["checks"].append(("✅", "弱口令库", "未命中"))
+
+    # ② 长度
+    if len(pwd) >= 12:
+        result["checks"].append(("✅", "长度", f"{len(pwd)} 位"))
+    elif len(pwd) >= 8:
+        result["checks"].append(("🟡", "长度", f"{len(pwd)} 位（建议 ≥ 12）"))
+    else:
+        result["checks"].append(("🔴", "长度", f"仅 {len(pwd)} 位（至少 8 位）"))
+        result["issues"] += 1
+
+    # ③ 字符类型
+    has_lower = bool(re.search(r"[a-z]", pwd))
+    has_upper = bool(re.search(r"[A-Z]", pwd))
+    has_digit = bool(re.search(r"\d", pwd))
+    has_special = bool(re.search(r"[^a-zA-Z0-9]", pwd))
+    types = sum([has_lower, has_upper, has_digit, has_special])
+    if types >= 4:
+        result["checks"].append(("✅", "字符类型", "含大小写+数字+符号"))
+    elif types >= 3:
+        result["checks"].append(("🟡", "字符类型", f"含 {types} 种类型（建议 4 种）"))
+    else:
+        result["checks"].append(("🔴", "字符类型", f"仅 {types} 种类型"))
+        result["issues"] += 1
+
+    # ④ 重复模式
+    if re.search(r"(.)\1{2,}", pwd):
+        result["checks"].append(("🟡", "重复模式", "存在连续重复字符（如 aaa）"))
+        result["issues"] += 1
+    else:
+        result["checks"].append(("✅", "重复模式", "无"))
+
+    # ⑤ 键盘序列
+    keyboard_seqs = [
+        "qwerty", "asdfgh", "zxcvbn", "qazwsx", "1qaz",
+        "123456", "qwertyuiop", "asdfghjkl", "zxcvbnm",
+    ]
+    if any(seq in pwd.lower() for seq in keyboard_seqs):
+        result["checks"].append(("🟡", "键盘序列", "存在键盘横向序列（如 qwerty）"))
+        result["issues"] += 1
+    else:
+        result["checks"].append(("✅", "键盘序列", "无"))
+
+    # 综合评级
+    if result["issues"] == 0:
+        result["level"] = "🟢"
+    elif result["issues"] <= 2:
+        result["level"] = "🟡"
+    else:
+        result["level"] = "🔴"
+
+    return result
+
+
+# ── 公开 API ──
 
 def check_password_strength(password: str) -> str:
     """分析单个密码的强度，返回详细报告"""
@@ -107,6 +215,7 @@ def check_password_strength(password: str) -> str:
     pwd = password
     wordlist = _load_wordlist()
     using = "完整字典" if len(wordlist) > 500 else "内置 Top 200"
+    result = _rate_password(pwd, wordlist)
 
     lines = []
     lines.append("═" * 40)
@@ -116,119 +225,22 @@ def check_password_strength(password: str) -> str:
     lines.append(f" 字典: {using} ({len(wordlist)} 条)")
     lines.append("")
 
-    checks = []
-    issues = 0
-
-    # ① 弱口令库命中
-    if pwd.lower() in wordlist:
-        checks.append(("🔴", "弱口令库", f"命中常见弱口令（排名 {wordlist.index(pwd.lower())+1}）"))
-        issues += 1
-    else:
-        checks.append(("✅", "弱口令库", "未命中"))
-
-    # ② 长度
-    if len(pwd) >= 12:
-        checks.append(("✅", "长度", f"{len(pwd)} 位"))
-    elif len(pwd) >= 8:
-        checks.append(("🟡", "长度", f"{len(pwd)} 位（建议 ≥ 12）"))
-    else:
-        checks.append(("🔴", "长度", f"仅 {len(pwd)} 位（至少 8 位）"))
-        issues += 1
-
-    # ③ 字符类型
-    has_lower = bool(re.search(r"[a-z]", pwd))
-    has_upper = bool(re.search(r"[A-Z]", pwd))
-    has_digit = bool(re.search(r"\d", pwd))
-    has_special = bool(re.search(r"[^a-zA-Z0-9]", pwd))
-    types = sum([has_lower, has_upper, has_digit, has_special])
-    if types >= 4:
-        checks.append(("✅", "字符类型", "含大小写+数字+符号"))
-    elif types >= 3:
-        checks.append(("🟡", "字符类型", f"含 {types} 种类型（建议 4 种）"))
-    else:
-        checks.append(("🔴", "字符类型", f"仅 {types} 种类型"))
-        issues += 1
-
-    # ④ 重复模式
-    if re.search(r"(.)\1{2,}", pwd):
-        checks.append(("🟡", "重复模式", "存在连续重复字符（如 aaa）"))
-        issues += 1
-    else:
-        checks.append(("✅", "重复模式", "无"))
-
-    # ⑤ 键盘序列
-    keyboard_seqs = [
-        "qwerty", "asdfgh", "zxcvbn", "qazwsx", "1qaz",
-        "123456", "qwertyuiop", "asdfghjkl", "zxcvbnm",
-    ]
-    found_seq = any(seq in pwd.lower() for seq in keyboard_seqs)
-    if found_seq:
-        checks.append(("🟡", "键盘序列", "存在键盘横向序列（如 qwerty）"))
-        issues += 1
-    else:
-        checks.append(("✅", "键盘序列", "无"))
-
-    # 综合评级
-    if issues == 0:
-        level = "🟢 安全"
-        advice = "密码强度良好"
-    elif issues <= 2:
-        level = "🟡 一般"
-        advice = "建议增强密码复杂度"
-    else:
-        level = "🔴 弱"
-        advice = "强烈建议更换为 12 位以上、包含大小写+数字+符号的随机密码"
-
-    lines.append(f" 风险等级: {level} ({issues}/5 项需改进)")
+    level_labels = {"🟢": "🟢 安全", "🟡": "🟡 一般", "🔴": "🔴 弱"}
+    lines.append(f" 风险等级: {level_labels[result['level']]} ({result['issues']}/5 项需改进)")
     lines.append("")
-    for icon, name, detail in checks:
+    for icon, name, detail in result["checks"]:
         lines.append(f" {icon} {name}: {detail}")
     lines.append("")
-    lines.append(f" 📋 {advice}")
+
+    advices = {
+        "🟢": "密码强度良好",
+        "🟡": "建议增强密码复杂度",
+        "🔴": "强烈建议更换为 12 位以上、包含大小写+数字+符号的随机密码",
+    }
+    lines.append(f" 📋 {advices[result['level']]}")
     lines.append("═" * 40)
 
     return "\n".join(lines)
-
-
-def _rate_password(pwd: str, wordlist: list) -> tuple:
-    """评估单个密码，返回 (issues, level_emoji, reasons)"""
-    issues = 0
-    reasons = []
-
-    if pwd.lower() in wordlist:
-        issues += 1
-        reasons.append(f"命中弱口令库(#{wordlist.index(pwd.lower())+1})")
-
-    if len(pwd) < 8:
-        issues += 1
-        reasons.append(f"长度不足({len(pwd)}位)")
-
-    has_lower = bool(re.search(r"[a-z]", pwd))
-    has_upper = bool(re.search(r"[A-Z]", pwd))
-    has_digit = bool(re.search(r"\d", pwd))
-    has_special = bool(re.search(r"[^a-zA-Z0-9]", pwd))
-    types = sum([has_lower, has_upper, has_digit, has_special])
-    if types < 3:
-        issues += 1
-        reasons.append(f"字符类型少({types}种)")
-
-    if re.search(r"(.)\1{2,}", pwd):
-        issues += 1
-        reasons.append("重复字符")
-
-    keyboard_seqs = ["qwerty", "asdfgh", "zxcvbn", "qazwsx", "1qaz"]
-    if any(seq in pwd.lower() for seq in keyboard_seqs):
-        issues += 1
-        reasons.append("键盘序列")
-
-    if issues == 0:
-        level = "🟢"
-    elif issues <= 2:
-        level = "🟡"
-    else:
-        level = "🔴"
-
-    return issues, level, reasons
 
 
 def check_password_batch(text: str) -> str:
@@ -259,10 +271,10 @@ def check_password_batch(text: str) -> str:
             display = pwd[:27] + "..."
         else:
             display = pwd
-        issues, level, reasons = _rate_password(pwd, wordlist)
-        stats[level] += 1
-        reason_str = "; ".join(reasons) if reasons else "—"
-        lines.append(f" {display:<32s} {level:<6s} {reason_str}")
+        r = _rate_password(pwd, wordlist)
+        stats[r["level"]] += 1
+        reason_str = "; ".join(r["reasons"]) if r["reasons"] else "—"
+        lines.append(f" {display:<32s} {r['level']:<6s} {reason_str}")
 
     lines.append(" " + "-" * 60)
     lines.append(f" 🟢 安全: {stats['🟢']}   🟡 一般: {stats['🟡']}   🔴 弱: {stats['🔴']}")

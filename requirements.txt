@@ -1,4 +1,4 @@
-PyQt6>=6.6,<7
+PySide6>=6.6,<7
 python-nmap>=0.7
 prettytable>=3.0
 dnspython>=2.6

@@ -34,10 +34,13 @@ def calculate_ipv4(text: str) -> str:
 
 def _format_report(net: ipaddress.IPv4Network, raw_input: str = "") -> str:
     """生成格式化的子网报告"""
-    hosts = list(net.hosts())
-    usable = hosts[0] if hosts else None
-    last_usable = hosts[-1] if hosts else None
+    # 仅小子网枚举地址范围（≤65536 个地址），大子网跳过避免卡死
     total_hosts = net.num_addresses - 2 if net.num_addresses > 2 else 0
+    show_range = net.num_addresses <= 65536
+    if show_range:
+        hosts = list(net.hosts())
+        usable = hosts[0] if hosts else None
+        last_usable = hosts[-1] if hosts else None
 
     # IP 类型
     if net.is_private:
@@ -75,8 +78,10 @@ def _format_report(net: ipaddress.IPv4Network, raw_input: str = "") -> str:
     lines.append(f" 广播地址:{net.broadcast_address}")
     lines.append(f" 子网掩码:{net.netmask}")
     lines.append(f" 反掩码 :{net.hostmask}")
-    if usable and last_usable:
+    if show_range and usable and last_usable:
         lines.append(f" 地址范围:{usable} - {last_usable}")
+    elif not show_range:
+        lines.append(f" 地址范围:<子网过大({net.num_addresses}个地址)，已跳过>")
     lines.append(f" 可用地址:{total_hosts}")
     lines.append(f" 总地址数:{net.num_addresses}")
     lines.append(f" 地址类型:{ip_type} ({ip_class})")

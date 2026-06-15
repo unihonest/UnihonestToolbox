@@ -7,74 +7,117 @@ __license__ = "GNU General Public License v3.0"
 import sys
 import webbrowser
 
-from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QTabWidget, QVBoxLayout,
-    QWidget, QTextEdit, QMenu, QComboBox, QHBoxLayout, QLabel,
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QVBoxLayout, QHBoxLayout,
+    QWidget, QTextEdit, QMenu, QLabel, QStackedWidget, QSizePolicy,
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction
+from PySide6.QtGui import QAction
 
-from config.settings import WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE
+from config.settings import (
+    WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NAV_ITEMS,
+)
 from config.links import get_menu_links
 from ui.theme import darkcss
 from ui.tool_text import get_tool_txt
-from ui.widgets import create_label
+from ui.widgets import create_nav_button
+from ui.settings_dialog import SettingsDialog
 from ui.pages.nmap_page import NmapPage
 from ui.pages.dns_page import DnsPage
 from ui.pages.whois_page import WhoisPage
-from ui.pages.cmd_page import CmdPage
 from ui.pages.password_page import PasswordPage
 from ui.pages.ip_page import IpPage
-from utils.helpers import load_font, get_figlet_art
+from ui.pages.ip_lookup_page import IpLookupPage
+from utils.helpers import load_mono_font, get_figlet_art
 
+# 工具注册表：{名称: PageClass}
+TOOL_REGISTRY = {
+    "Nmap": NmapPage,
+    "Whois": WhoisPage,
+    "DNS-type": DnsPage,
+    "弱口令检测": PasswordPage,
+    "IP计算器": IpPage,
+    "公网IP查询": IpLookupPage,
+}
 
 class MainWindow(QMainWindow):
-    """网络安全工具箱主窗口"""
+    """网络安全工具箱主窗口 — 侧边栏导航 + 堆叠页面"""
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle(WINDOW_TITLE)
-        self.statusBar().showMessage("就绪")
+        self.statusBar().showMessage("🟢 就绪")
 
         # ── 菜单栏 ──
         self._build_menubar()
 
-        # ── 中央部件 ──
+        # 菜单栏最右侧：设置（下拉菜单，保持可扩展性）
+        settings_menu = self.menuBar().addMenu("设置")
+        proxy_action = QAction("代理设置", self)
+        proxy_action.triggered.connect(self._on_settings)
+        settings_menu.addAction(proxy_action)
+
+        # ── 中央部件：侧边栏 + 右侧内容 ──
         central = QWidget()
         self.setCentralWidget(central)
-        main_layout = QVBoxLayout(central)
-        main_layout.setContentsMargins(8, 8, 8, 8)
+        root = QHBoxLayout(central)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(0)
 
-        # ── 工具选择下拉列表 ──
-        top_bar = QHBoxLayout()
-        label = QLabel("选择工具")
-        label.setStyleSheet("background-color: transparent; border: none; color: #000000; font-weight: bold;")
-        top_bar.addWidget(label)
-        self.tool_combo = QComboBox()
-        self.tool_combo.addItems([
-            "自写工具", "IP计算器",
-            "Nmap", "Whois", "DNS-type", "命令执行", "弱口令检测",
-        ])
-        self.tool_combo.setStyleSheet("background-color: #CD661D;")
-        self.tool_combo.currentTextChanged.connect(self._on_tool_changed)
-        top_bar.addWidget(self.tool_combo)
-        top_bar.addStretch()
-        main_layout.addLayout(top_bar)
+        # ── 左侧边栏 ──
+        side_bar = QWidget()
+        side_bar.setObjectName("side_bar")
+        side_layout = QVBoxLayout(side_bar)
+        side_layout.setContentsMargins(0, 12, 0, 0)
+        side_layout.setSpacing(0)
 
-        # ── 标签页（工具面板） ──
-        self.tabs = QTabWidget()
-        self.tabs.setTabBarAutoHide(True)
-        main_layout.addWidget(self.tabs)
+        # 导航按钮组
+        self.nav_buttons = {}
+        for icon, name in NAV_ITEMS:
+            btn = create_nav_button(icon, name)
+            btn.clicked.connect(lambda checked, n=name: self._on_nav(n))
+            side_layout.addWidget(btn)
+            self.nav_buttons[name] = btn
 
-        # 工具页面缓存
+        side_layout.addStretch()
+
+        # 版本号
+        side_version = QLabel("v2.0")
+        side_version.setObjectName("side_version")
+        side_layout.addWidget(side_version)
+
+        root.addWidget(side_bar)
+
+        # ── 右侧内容区：描述 → 输入 → 输出 ──
+        right_panel = QVBoxLayout()
+        right_panel.setContentsMargins(20, 12, 20, 12)
+        right_panel.setSpacing(8)
+
+        # ① 工具描述区
+        self.tool_desc = QLabel("")
+        self.tool_desc.setObjectName("tool_desc")
+        self.tool_desc.setWordWrap(True)
+        self.tool_desc.setMaximumHeight(48)
+        right_panel.addWidget(self.tool_desc)
+
+        # ② 工具输入区
+        self.stack = QStackedWidget()
+        self.stack.setObjectName("input_stack")
+        self.stack.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self._pages = {}
+        right_panel.addWidget(self.stack)
 
-        # ── 输出区域 ──
+        # ③ 工具输出区
         self.result_area = QTextEdit()
         self.result_area.setReadOnly(True)
-        self.result_area.setMinimumHeight(250)
+        self.result_area.setFont(load_mono_font(13))
         self.result_area.setText(get_figlet_art("unihonest"))
-        main_layout.addWidget(self.result_area)
+        right_panel.addWidget(self.result_area, stretch=1)
+
+        root.addLayout(right_panel, stretch=1)
+
+        # ── 默认选中第一个工具 ──
+        if NAV_ITEMS:
+            self._on_nav(NAV_ITEMS[0][1])
 
     # ── 菜单栏构建 ──
     def _build_menubar(self):
@@ -96,76 +139,59 @@ class MainWindow(QMainWindow):
                     sub_menu.addAction(action)
                 main_menu.addMenu(sub_menu)
 
-    # ── 工具切换 ──
-    def _on_tool_changed(self, name: str):
-        if name == "自写工具":
-            self.result_area.setText("自己写的小工具，觉得有用就加进来了。")
-            return
+    # ── 侧边栏导航 ──
+    def _on_nav(self, name: str):
+        """导航按钮点击：切换页面 + 更新描述 + 高亮按钮"""
+        # 更新导航按钮高亮
+        for btn_name, btn in self.nav_buttons.items():
+            btn.setProperty("active", btn_name == name)
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
 
-        # 显示工具说明
+        # 更新工具描述
         try:
-            self.result_area.setText(get_tool_txt(name))
+            desc = get_tool_txt(name)
+            # 取第一行作为简短描述，排除标题行
+            lines = [l for l in desc.strip().split("\n") if l.strip() and not l.startswith("举")]
+            summary = lines[0] if lines else ""
+            self.tool_desc.setText(summary)
         except Exception:
-            pass
+            self.tool_desc.setText("")
 
-        # 切换到对应页面
+        # 切换页面
         page = self._get_or_create_page(name)
         if page:
-            idx = self.tabs.indexOf(page)
-            if idx < 0:
-                idx = self.tabs.addTab(page, name)
-            self.tabs.setCurrentIndex(idx)
+            self.stack.setCurrentWidget(page)
 
+    # ── 页面懒加载 ──
     def _get_or_create_page(self, name: str):
-        """懒加载工具页面"""
+        """懒加载工具页面（配置驱动）"""
         if name in self._pages:
             return self._pages[name]
 
-        page = None
-        if name == "Nmap":
-            page = NmapPage(
-                status_callback=self.statusBar().showMessage,
-                result_callback=self.result_area.setText,
-            )
-        elif name == "Whois":
-            page = WhoisPage(
-                status_callback=self.statusBar().showMessage,
-                result_callback=self.result_area.setText,
-            )
-        elif name == "DNS-type":
-            page = DnsPage(
-                status_callback=self.statusBar().showMessage,
-                result_callback=self.result_area.setText,
-            )
-        elif name == "命令执行":
-            page = CmdPage(
-                status_callback=self.statusBar().showMessage,
-                result_callback=self._append_result,
-            )
-        elif name == "弱口令检测":
-            page = PasswordPage(
-                status_callback=self.statusBar().showMessage,
-                result_callback=self.result_area.setText,
-            )
-        elif name == "IP计算器":
-            page = IpPage(
-                status_callback=self.statusBar().showMessage,
-                result_callback=self.result_area.setText,
-            )
+        PageClass = TOOL_REGISTRY.get(name)
+        if not PageClass:
+            return None
 
-        if page:
-            self._pages[name] = page
+        page = PageClass(
+            status_callback=self.statusBar().showMessage,
+            result_callback=self.result_area.setText,
+        )
+        self._pages[name] = page
+        self.stack.addWidget(page)
         return page
 
-    # ── 命令页追加输出（不覆盖） ──
-    def _append_result(self, text: str):
-        self.result_area.append(text)
+    # ── 设置按钮 ──
+    def _on_settings(self):
+        dlg = SettingsDialog(self)
+        dlg.exec()
+
 
 
 def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(darkcss())
-    app.setFont(load_font())
+    app.setFont(load_mono_font(13))
 
     window = MainWindow()
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT)

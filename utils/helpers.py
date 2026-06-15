@@ -3,32 +3,29 @@
 
 import os
 import pyfiglet
-from PyQt6.QtGui import QFont, QFontDatabase
+from PySide6.QtGui import QFont, QFontDatabase
 
 
-def load_font():
-    """加载本地更纱黑体，失败则回退 Consolas"""
+def load_mono_font(size: int = 13):
+    """加载本地更纱黑体等宽字体（用于输出区域），失败则回退 Consolas"""
     current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     font_path = os.path.join(current_dir, "font", "SarasaFixedSC-Light.ttf")
 
     if not os.path.exists(font_path):
-        print(f"Font file not found at: {font_path}")
-        return QFont("Consolas", 11)
+        return QFont("Consolas", size)
 
     font_id = QFontDatabase.addApplicationFont(font_path)
     if font_id < 0:
-        print("Failed to add application font.")
-        return QFont("Consolas", 11)
+        return QFont("Consolas", size)
 
     families = QFontDatabase.applicationFontFamilies(font_id)
     if not families:
-        print("No available font families in the loaded font.")
-        return QFont("Consolas", 11)
+        return QFont("Consolas", size)
 
-    return QFont(families[0], 11)
+    return QFont(families[0], size)
 
 
-def get_figlet_art(text: str, font: str = "univers", width: int = 120) -> str:
+def get_figlet_art(text: str, font: str = "univers", width: int = 100) -> str:
     """生成 ASCII 艺术字"""
     figlet = pyfiglet.Figlet(font=font, width=width)
     return figlet.renderText(text)

@@ -2,6 +2,7 @@
 """Nmap 扫描 + CSV 日志"""
 
 import csv
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -10,10 +11,24 @@ from prettytable import PrettyTable, ALL
 
 from config.settings import LOG_DIRS
 
+# Windows 常见 Nmap 安装路径（python-nmap 默认只搜 PATH）
+_NMAP_SEARCH = [
+    r"C:\Program Files (x86)\Nmap\nmap.exe",
+    r"C:\Program Files\Nmap\nmap.exe",
+]
+if os.name == "nt":
+    _NMAP_SEARCH.append("nmap.exe")
+else:
+    _NMAP_SEARCH.append("nmap")
+
 
 def _validate_ip(ip: str) -> bool:
-    """简单的 IP/域名校验"""
+    """IP/域名校验：拒绝空输入和 Shell 特殊字符"""
     if not ip or not ip.strip():
+        return False
+    # 防止命令注入，拒绝 Shell 元字符
+    dangerous = {";", "&", "|", "`", "$", "(", ")", "{", "}", "<", ">", "\n", "\r"}
+    if any(c in ip for c in dangerous):
         return False
     return True
 
@@ -68,7 +83,7 @@ def NmapScan(ip: str, arguments: str = "") -> tuple:
     if not _validate_ip(ip):
         return "Error: 请输入有效的目标 IP 或域名", ""
 
-    nm = nmap.PortScanner()
+    nm = nmap.PortScanner(nmap_search_path=_NMAP_SEARCH)
     nm.scan(hosts=ip, arguments=arguments)
     csv_result = nm.csv()
     return _save_to_csv(csv_result, nm.command_line())
